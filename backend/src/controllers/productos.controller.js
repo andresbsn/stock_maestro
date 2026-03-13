@@ -1,4 +1,4 @@
-const { Producto, InventarioGeneral, InventarioComplejo } = require('../models');
+const { Producto, InventarioGeneral, InventarioComplejo, sequelize } = require('../models');
 
 exports.getAll = async (req, res) => {
     try {
@@ -49,6 +49,10 @@ exports.getAll = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
+        // Sanitize numeric fields: empty string -> 0
+        if (req.body.costo_unitario === "") req.body.costo_unitario = 0;
+        if (req.body.precio_venta_unitario === "") req.body.precio_venta_unitario = 0;
+
         const producto = await Producto.create(req.body);
         // Init General Stock 0
         await InventarioGeneral.create({ producto_id: producto.id, stock: 0 });
@@ -62,6 +66,12 @@ exports.update = async (req, res) => {
     const t = await sequelize.transaction();
     try {
         const { id } = req.params;
+        
+        // Sanitize numeric fields: empty string -> 0
+        if (req.body.costo_unitario === "") req.body.costo_unitario = 0;
+        if (req.body.precio_venta_unitario === "") req.body.precio_venta_unitario = 0;
+        if (req.body.stock === "") req.body.stock = 0;
+
         const { stock, ...productoData } = req.body;
         
         const [updated] = await Producto.update(productoData, { where: { id }, transaction: t });
