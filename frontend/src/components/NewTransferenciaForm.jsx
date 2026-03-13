@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import productService from '../services/productService';
+import complejosService from '../services/complejosService';
 
 const NewTransferenciaForm = ({ onSubmit, onCancel, initialData }) => {
-    const [complejoId, setComplejoId] = useState('1'); // Defaulting to 1 for MVP
+    const [complejoId, setComplejoId] = useState(''); 
     const [items, setItems] = useState([]);
     const [products, setProducts] = useState([]);
+    const [complejos, setComplejos] = useState([]);
     
     // Item adding state
     const [selectedProduct, setSelectedProduct] = useState('');
@@ -14,7 +16,7 @@ const NewTransferenciaForm = ({ onSubmit, onCancel, initialData }) => {
 
     useEffect(() => {
         if (initialData) {
-            setComplejoId(initialData.complejo_id || '1');
+            setComplejoId(initialData.complejo_id || '');
             if (initialData.items) {
                 // Map existing items. Note: we need productName which is nested in item.producto.nombre usually
                 const mappedItems = initialData.items.map(i => ({
@@ -29,16 +31,26 @@ const NewTransferenciaForm = ({ onSubmit, onCancel, initialData }) => {
     }, [initialData]);
 
     useEffect(() => {
-        const fetchProducts = async () => {
+        const fetchData = async () => {
             try {
-                const res = await productService.getAll();
-                // Filter only products with positive general stock ideally, but let backend handle check
-                setProducts(res.data || []);
+                const [productsRes, complejosRes] = await Promise.all([
+                    productService.getAll(),
+                    complejosService.getAll()
+                ]);
+                
+                setProducts(productsRes.data || []);
+                const complejosList = complejosRes.data || []; 
+                setComplejos(complejosList);
+                
+                // If not editing and we have complexes, default to first one if not set
+                if (!initialData && !complejoId && complejosList.length > 0) {
+                    setComplejoId(complejosList[0].id);
+                }
             } catch (err) {
-                console.error("Error fetching products", err);
+                console.error("Error fetching data", err);
             }
         };
-        fetchProducts();
+        fetchData();
     }, []);
 
     const filteredProducts = products.filter(p => 
@@ -99,9 +111,12 @@ const NewTransferenciaForm = ({ onSubmit, onCancel, initialData }) => {
                     value={complejoId} 
                     onChange={e => setComplejoId(e.target.value)}
                 >
-                    {/* In a real app fetch complexes */}
-                    <option value="1">Complejo Principal (ID: 1)</option>
-                    <option value="2">Complejo Secundario (ID: 2)</option>
+                    <option value="">Seleccione complejo...</option>
+                    {complejos.map(c => (
+                        <option key={c.id} value={c.id}>
+                            {c.nombre} (ID: {c.id})
+                        </option>
+                    ))}
                 </select>
              </div>
 
