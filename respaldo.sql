@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict mD3ggVrH0RES9rasFgdZ354yUPxr5jaKoycFUesqo3ZhGaDFxzN8c6hAU7cuMe1
+\restrict AGUNe9KthOzio1mFbtI5FgaTUL54Y6FX4r7SmaQnoVA3g187BVJeUkyydWHXXSA
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
@@ -19,151 +19,164 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+DROP DATABASE inventario_circuito_pm;
 --
--- Name: gestion_ventas; Type: SCHEMA; Schema: -; Owner: postgres
+-- Name: inventario_circuito_pm; Type: DATABASE; Schema: -; Owner: postgres
 --
 
-CREATE SCHEMA gestion_ventas;
+CREATE DATABASE inventario_circuito_pm WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Spanish_Argentina.1252';
 
 
-ALTER SCHEMA gestion_ventas OWNER TO postgres;
+ALTER DATABASE inventario_circuito_pm OWNER TO postgres;
+
+\unrestrict AGUNe9KthOzio1mFbtI5FgaTUL54Y6FX4r7SmaQnoVA3g187BVJeUkyydWHXXSA
+\connect inventario_circuito_pm
+\restrict AGUNe9KthOzio1mFbtI5FgaTUL54Y6FX4r7SmaQnoVA3g187BVJeUkyydWHXXSA
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: enum_Cajas_estado; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_Cajas_estado" AS ENUM (
+    'ABIERTA',
+    'CERRADA'
+);
+
+
+ALTER TYPE public."enum_Cajas_estado" OWNER TO postgres;
+
+--
+-- Name: enum_MovimientoStocks_scope; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_MovimientoStocks_scope" AS ENUM (
+    'GENERAL',
+    'COMPLEJO'
+);
+
+
+ALTER TYPE public."enum_MovimientoStocks_scope" OWNER TO postgres;
+
+--
+-- Name: enum_OrdenTransferencia_estado; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_OrdenTransferencia_estado" AS ENUM (
+    'BORRADOR',
+    'CONFIRMADA',
+    'CANCELADA'
+);
+
+
+ALTER TYPE public."enum_OrdenTransferencia_estado" OWNER TO postgres;
+
+--
+-- Name: enum_Torneos_estado; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_Torneos_estado" AS ENUM (
+    'ACTIVO',
+    'FINALIZADO'
+);
+
+
+ALTER TYPE public."enum_Torneos_estado" OWNER TO postgres;
+
+--
+-- Name: enum_Users_role; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_Users_role" AS ENUM (
+    'ADMIN',
+    'COMPLEJO'
+);
+
+
+ALTER TYPE public."enum_Users_role" OWNER TO postgres;
+
+--
+-- Name: enum_VentaItems_tipo; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_VentaItems_tipo" AS ENUM (
+    'GANANCIA',
+    'GASTO'
+);
+
+
+ALTER TYPE public."enum_VentaItems_tipo" OWNER TO postgres;
+
+--
+-- Name: enum_Venta_metodo_pago; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_Venta_metodo_pago" AS ENUM (
+    'EFECTIVO',
+    'TRANSFERENCIA',
+    'TARJETA',
+    'QR',
+    'OTRO',
+    'CORTESIA'
+);
+
+
+ALTER TYPE public."enum_Venta_metodo_pago" OWNER TO postgres;
+
+--
+-- Name: enum_torneos_estado; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.enum_torneos_estado AS ENUM (
+    'ACTIVO',
+    'FINALIZADO'
+);
+
+
+ALTER TYPE public.enum_torneos_estado OWNER TO postgres;
 
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: SequelizeData; Type: TABLE; Schema: gestion_ventas; Owner: postgres
+-- Name: Cajas; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE gestion_ventas."SequelizeData" (
-    name character varying(255) NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas."SequelizeData" OWNER TO postgres;
-
---
--- Name: SequelizeMeta; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas."SequelizeMeta" (
-    name character varying(255) NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas."SequelizeMeta" OWNER TO postgres;
-
---
--- Name: audit_logs; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.audit_logs (
+CREATE TABLE public."Cajas" (
     id integer NOT NULL,
-    entity_type character varying(50) NOT NULL,
-    entity_id integer,
-    action character varying(20) NOT NULL,
-    old_values jsonb,
-    new_values jsonb,
-    user_id integer,
-    ip_address character varying(45),
-    user_agent character varying(255),
-    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.audit_logs OWNER TO postgres;
-
---
--- Name: audit_logs_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.audit_logs_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.audit_logs_id_seq OWNER TO postgres;
-
---
--- Name: audit_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.audit_logs_id_seq OWNED BY gestion_ventas.audit_logs.id;
-
-
---
--- Name: cash_movements; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.cash_movements (
-    id integer NOT NULL,
-    cash_register_id integer NOT NULL,
-    type character varying(255) NOT NULL,
-    amount numeric(14,2) NOT NULL,
-    payment_method character varying(255) NOT NULL,
-    expense_category_id integer,
-    reference_type character varying(255),
-    reference_id integer,
-    description text,
-    user_id integer NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.cash_movements OWNER TO postgres;
-
---
--- Name: cash_movements_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.cash_movements_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.cash_movements_id_seq OWNER TO postgres;
-
---
--- Name: cash_movements_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.cash_movements_id_seq OWNED BY gestion_ventas.cash_movements.id;
-
-
---
--- Name: cash_registers; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.cash_registers (
-    id integer NOT NULL,
-    date date NOT NULL,
-    user_id integer NOT NULL,
-    status character varying(255) NOT NULL,
-    opening_balance numeric(14,2) DEFAULT 0 NOT NULL,
-    closing_balance numeric(14,2),
+    estado public."enum_Cajas_estado" DEFAULT 'ABIERTA'::public."enum_Cajas_estado",
+    monto_inicial numeric(10,2) DEFAULT 0,
+    monto_final numeric(10,2),
+    opened_at timestamp with time zone,
     closed_at timestamp with time zone,
-    notes text,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    torneo_id integer,
+    complejo_id integer,
+    opened_by integer,
+    closed_by integer
 );
 
 
-ALTER TABLE gestion_ventas.cash_registers OWNER TO postgres;
+ALTER TABLE public."Cajas" OWNER TO postgres;
 
 --
--- Name: cash_registers_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
+-- Name: Cajas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE gestion_ventas.cash_registers_id_seq
+CREATE SEQUENCE public."Cajas_id_seq"
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -172,39 +185,35 @@ CREATE SEQUENCE gestion_ventas.cash_registers_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE gestion_ventas.cash_registers_id_seq OWNER TO postgres;
+ALTER SEQUENCE public."Cajas_id_seq" OWNER TO postgres;
 
 --
--- Name: cash_registers_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
+-- Name: Cajas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE gestion_ventas.cash_registers_id_seq OWNED BY gestion_ventas.cash_registers.id;
+ALTER SEQUENCE public."Cajas_id_seq" OWNED BY public."Cajas".id;
 
 
 --
--- Name: client_account_movements; Type: TABLE; Schema: gestion_ventas; Owner: postgres
+-- Name: Complejos; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE gestion_ventas.client_account_movements (
+CREATE TABLE public."Complejos" (
     id integer NOT NULL,
-    client_id integer NOT NULL,
-    type character varying(255) NOT NULL,
-    amount numeric(14,2) NOT NULL,
-    reference_type character varying(255) NOT NULL,
-    reference_id integer,
-    notes text,
-    user_id integer NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    nombre character varying(255) NOT NULL,
+    direccion character varying(255),
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL
 );
 
 
-ALTER TABLE gestion_ventas.client_account_movements OWNER TO postgres;
+ALTER TABLE public."Complejos" OWNER TO postgres;
 
 --
--- Name: client_account_movements_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
+-- Name: Complejos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE gestion_ventas.client_account_movements_id_seq
+CREATE SEQUENCE public."Complejos_id_seq"
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -213,80 +222,373 @@ CREATE SEQUENCE gestion_ventas.client_account_movements_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE gestion_ventas.client_account_movements_id_seq OWNER TO postgres;
+ALTER SEQUENCE public."Complejos_id_seq" OWNER TO postgres;
 
 --
--- Name: client_account_movements_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
+-- Name: Complejos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE gestion_ventas.client_account_movements_id_seq OWNED BY gestion_ventas.client_account_movements.id;
+ALTER SEQUENCE public."Complejos_id_seq" OWNED BY public."Complejos".id;
 
 
 --
--- Name: clients; Type: TABLE; Schema: gestion_ventas; Owner: postgres
+-- Name: DevolucionItems; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE gestion_ventas.clients (
+CREATE TABLE public."DevolucionItems" (
     id integer NOT NULL,
-    name character varying(255) NOT NULL,
-    document character varying(255) NOT NULL,
-    phone character varying(255),
-    email character varying(255),
-    address character varying(255),
-    tax_condition character varying(255),
-    is_active boolean DEFAULT true NOT NULL,
+    producto_id integer NOT NULL,
+    cantidad integer NOT NULL,
+    costo_unitario_snapshot numeric(10,2) NOT NULL,
+    subtotal numeric(10,2) NOT NULL,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    devolucion_id integer NOT NULL
+);
+
+
+ALTER TABLE public."DevolucionItems" OWNER TO postgres;
+
+--
+-- Name: DevolucionItems_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."DevolucionItems_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public."DevolucionItems_id_seq" OWNER TO postgres;
+
+--
+-- Name: DevolucionItems_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."DevolucionItems_id_seq" OWNED BY public."DevolucionItems".id;
+
+
+--
+-- Name: Devolucions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Devolucions" (
+    id integer NOT NULL,
+    created_at timestamp with time zone,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    caja_id integer NOT NULL,
+    created_by integer NOT NULL
+);
+
+
+ALTER TABLE public."Devolucions" OWNER TO postgres;
+
+--
+-- Name: Devolucions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."Devolucions_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public."Devolucions_id_seq" OWNER TO postgres;
+
+--
+-- Name: Devolucions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."Devolucions_id_seq" OWNED BY public."Devolucions".id;
+
+
+--
+-- Name: Gastos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Gastos" (
+    id integer NOT NULL,
+    monto numeric(10,2) NOT NULL,
+    descripcion character varying(255) NOT NULL,
+    categoria character varying(255),
+    created_at timestamp with time zone,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    caja_id integer NOT NULL,
+    created_by integer NOT NULL
+);
+
+
+ALTER TABLE public."Gastos" OWNER TO postgres;
+
+--
+-- Name: Gastos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."Gastos_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public."Gastos_id_seq" OWNER TO postgres;
+
+--
+-- Name: Gastos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."Gastos_id_seq" OWNED BY public."Gastos".id;
+
+
+--
+-- Name: InventarioComplejos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."InventarioComplejos" (
+    id integer NOT NULL,
+    stock integer DEFAULT 0 NOT NULL,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    producto_id integer,
+    complejo_id integer
+);
+
+
+ALTER TABLE public."InventarioComplejos" OWNER TO postgres;
+
+--
+-- Name: InventarioComplejos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."InventarioComplejos_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public."InventarioComplejos_id_seq" OWNER TO postgres;
+
+--
+-- Name: InventarioComplejos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."InventarioComplejos_id_seq" OWNED BY public."InventarioComplejos".id;
+
+
+--
+-- Name: InventarioGenerals; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."InventarioGenerals" (
+    id integer NOT NULL,
+    stock integer DEFAULT 0 NOT NULL,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    producto_id integer
+);
+
+
+ALTER TABLE public."InventarioGenerals" OWNER TO postgres;
+
+--
+-- Name: InventarioGenerals_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."InventarioGenerals_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public."InventarioGenerals_id_seq" OWNER TO postgres;
+
+--
+-- Name: InventarioGenerals_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."InventarioGenerals_id_seq" OWNED BY public."InventarioGenerals".id;
+
+
+--
+-- Name: MovimientoStocks; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."MovimientoStocks" (
+    id integer NOT NULL,
+    scope public."enum_MovimientoStocks_scope" NOT NULL,
+    tipo character varying(255) NOT NULL,
+    cantidad_signed integer NOT NULL,
+    stock_resultante integer NOT NULL,
+    ref_tipo character varying(255),
+    ref_id integer,
+    created_at timestamp with time zone,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    producto_id integer,
+    complejo_id integer,
+    torneo_id integer,
+    created_by integer
+);
+
+
+ALTER TABLE public."MovimientoStocks" OWNER TO postgres;
+
+--
+-- Name: MovimientoStocks_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."MovimientoStocks_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public."MovimientoStocks_id_seq" OWNER TO postgres;
+
+--
+-- Name: MovimientoStocks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."MovimientoStocks_id_seq" OWNED BY public."MovimientoStocks".id;
+
+
+--
+-- Name: NotaCompraItems; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."NotaCompraItems" (
+    id integer NOT NULL,
+    cantidad integer NOT NULL,
+    costo_unitario_snapshot numeric(10,2) NOT NULL,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    nota_id integer,
+    producto_id integer
+);
+
+
+ALTER TABLE public."NotaCompraItems" OWNER TO postgres;
+
+--
+-- Name: NotaCompraItems_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."NotaCompraItems_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public."NotaCompraItems_id_seq" OWNER TO postgres;
+
+--
+-- Name: NotaCompraItems_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."NotaCompraItems_id_seq" OWNED BY public."NotaCompraItems".id;
+
+
+--
+-- Name: NotaCompras; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."NotaCompras" (
+    id integer NOT NULL,
+    fecha timestamp with time zone,
+    proveedor character varying(255),
+    observaciones text,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    created_by integer
+);
+
+
+ALTER TABLE public."NotaCompras" OWNER TO postgres;
+
+--
+-- Name: NotaCompras_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."NotaCompras_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public."NotaCompras_id_seq" OWNER TO postgres;
+
+--
+-- Name: NotaCompras_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."NotaCompras_id_seq" OWNED BY public."NotaCompras".id;
+
+
+--
+-- Name: OrdenTransferencia; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."OrdenTransferencia" (
+    id integer NOT NULL,
+    estado public."enum_OrdenTransferencia_estado" DEFAULT 'BORRADOR'::public."enum_OrdenTransferencia_estado",
+    fecha timestamp with time zone,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    complejo_id integer,
     created_by integer,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    deleted_at timestamp with time zone
+    es_gasto boolean DEFAULT false
 );
 
 
-ALTER TABLE gestion_ventas.clients OWNER TO postgres;
+ALTER TABLE public."OrdenTransferencia" OWNER TO postgres;
 
 --
--- Name: clients_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
+-- Name: OrdenTransferenciaItems; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE gestion_ventas.clients_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.clients_id_seq OWNER TO postgres;
-
---
--- Name: clients_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.clients_id_seq OWNED BY gestion_ventas.clients.id;
-
-
---
--- Name: credit_note_items; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.credit_note_items (
+CREATE TABLE public."OrdenTransferenciaItems" (
     id integer NOT NULL,
-    credit_note_id integer NOT NULL,
-    product_id integer NOT NULL,
-    quantity integer NOT NULL,
-    unit_price numeric(14,2) NOT NULL,
-    subtotal numeric(14,2) NOT NULL
+    cantidad integer NOT NULL,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    orden_id integer,
+    producto_id integer,
+    es_gasto boolean DEFAULT false
 );
 
 
-ALTER TABLE gestion_ventas.credit_note_items OWNER TO postgres;
+ALTER TABLE public."OrdenTransferenciaItems" OWNER TO postgres;
 
 --
--- Name: credit_note_items_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
+-- Name: OrdenTransferenciaItems_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE gestion_ventas.credit_note_items_id_seq
+CREATE SEQUENCE public."OrdenTransferenciaItems_id_seq"
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -295,40 +597,20 @@ CREATE SEQUENCE gestion_ventas.credit_note_items_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE gestion_ventas.credit_note_items_id_seq OWNER TO postgres;
+ALTER SEQUENCE public."OrdenTransferenciaItems_id_seq" OWNER TO postgres;
 
 --
--- Name: credit_note_items_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
+-- Name: OrdenTransferenciaItems_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE gestion_ventas.credit_note_items_id_seq OWNED BY gestion_ventas.credit_note_items.id;
+ALTER SEQUENCE public."OrdenTransferenciaItems_id_seq" OWNED BY public."OrdenTransferenciaItems".id;
 
 
 --
--- Name: credit_notes; Type: TABLE; Schema: gestion_ventas; Owner: postgres
+-- Name: OrdenTransferencia_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE gestion_ventas.credit_notes (
-    id integer NOT NULL,
-    sale_id integer,
-    client_id integer,
-    status character varying(255) NOT NULL,
-    date timestamp with time zone NOT NULL,
-    total numeric(14,2) DEFAULT 0 NOT NULL,
-    return_to_stock boolean DEFAULT true NOT NULL,
-    created_by integer NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.credit_notes OWNER TO postgres;
-
---
--- Name: credit_notes_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.credit_notes_id_seq
+CREATE SEQUENCE public."OrdenTransferencia_id_seq"
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -337,162 +619,40 @@ CREATE SEQUENCE gestion_ventas.credit_notes_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE gestion_ventas.credit_notes_id_seq OWNER TO postgres;
+ALTER SEQUENCE public."OrdenTransferencia_id_seq" OWNER TO postgres;
 
 --
--- Name: credit_notes_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
+-- Name: OrdenTransferencia_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE gestion_ventas.credit_notes_id_seq OWNED BY gestion_ventas.credit_notes.id;
-
-
---
--- Name: expense_categories; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.expense_categories (
-    id integer NOT NULL,
-    name character varying(255) NOT NULL,
-    is_active boolean DEFAULT true NOT NULL,
-    created_by integer,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.expense_categories OWNER TO postgres;
-
---
--- Name: expense_categories_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.expense_categories_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.expense_categories_id_seq OWNER TO postgres;
-
---
--- Name: expense_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.expense_categories_id_seq OWNED BY gestion_ventas.expense_categories.id;
+ALTER SEQUENCE public."OrdenTransferencia_id_seq" OWNED BY public."OrdenTransferencia".id;
 
 
 --
--- Name: permissions; Type: TABLE; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE gestion_ventas.permissions (
-    id integer NOT NULL,
-    key character varying(255) NOT NULL,
-    module character varying(255) NOT NULL,
-    description character varying(255)
-);
-
-
-ALTER TABLE gestion_ventas.permissions OWNER TO postgres;
-
---
--- Name: permissions_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.permissions_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.permissions_id_seq OWNER TO postgres;
-
---
--- Name: permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.permissions_id_seq OWNED BY gestion_ventas.permissions.id;
-
-
---
--- Name: product_categories; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.product_categories (
-    id integer NOT NULL,
-    name character varying(255) NOT NULL,
-    is_active boolean DEFAULT true NOT NULL,
-    created_by integer,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.product_categories OWNER TO postgres;
-
---
--- Name: product_categories_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.product_categories_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.product_categories_id_seq OWNER TO postgres;
-
---
--- Name: product_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.product_categories_id_seq OWNED BY gestion_ventas.product_categories.id;
-
-
---
--- Name: products; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.products (
+CREATE TABLE public."Productos" (
     id integer NOT NULL,
     sku character varying(255) NOT NULL,
-    barcode character varying(255),
-    name character varying(255) NOT NULL,
-    description text,
-    category_id integer,
-    unit character varying(255) NOT NULL,
-    location character varying(255),
-    is_active boolean DEFAULT true NOT NULL,
-    stock_min integer DEFAULT 0 NOT NULL,
-    stock_current integer DEFAULT 0 NOT NULL,
-    tax_rate numeric(10,2) DEFAULT 0 NOT NULL,
-    cost numeric(14,2) DEFAULT 0 NOT NULL,
-    price_retail numeric(14,2) DEFAULT 0 NOT NULL,
-    price_wholesale numeric(14,2) DEFAULT 0 NOT NULL,
-    price_promo numeric(14,2),
-    created_by integer,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    deleted_at timestamp with time zone
+    nombre character varying(255) NOT NULL,
+    unidad character varying(255) DEFAULT 'un'::character varying,
+    costo_unitario numeric(10,2) DEFAULT 0,
+    precio_venta_unitario numeric(10,2) DEFAULT 0,
+    activo boolean DEFAULT true,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    solo_admin boolean DEFAULT false
 );
 
 
-ALTER TABLE gestion_ventas.products OWNER TO postgres;
+ALTER TABLE public."Productos" OWNER TO postgres;
 
 --
--- Name: products_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE gestion_ventas.products_id_seq
+CREATE SEQUENCE public."Productos_id_seq"
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -501,37 +661,37 @@ CREATE SEQUENCE gestion_ventas.products_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE gestion_ventas.products_id_seq OWNER TO postgres;
+ALTER SEQUENCE public."Productos_id_seq" OWNER TO postgres;
 
 --
--- Name: products_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE gestion_ventas.products_id_seq OWNED BY gestion_ventas.products.id;
+ALTER SEQUENCE public."Productos_id_seq" OWNED BY public."Productos".id;
 
 
 --
--- Name: purchase_order_items; Type: TABLE; Schema: gestion_ventas; Owner: postgres
+-- Name: Torneos; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE gestion_ventas.purchase_order_items (
+CREATE TABLE public."Torneos" (
     id integer NOT NULL,
-    purchase_order_id integer NOT NULL,
-    product_id integer NOT NULL,
-    quantity integer NOT NULL,
-    unit_cost numeric(14,2) NOT NULL,
-    tax_rate numeric(10,2),
-    subtotal numeric(14,2) NOT NULL
+    nombre character varying(255) NOT NULL,
+    fecha_inicio date,
+    fecha_fin date,
+    estado public."enum_Torneos_estado" DEFAULT 'ACTIVO'::public."enum_Torneos_estado",
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
 );
 
 
-ALTER TABLE gestion_ventas.purchase_order_items OWNER TO postgres;
+ALTER TABLE public."Torneos" OWNER TO postgres;
 
 --
--- Name: purchase_order_items_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
+-- Name: Torneos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE gestion_ventas.purchase_order_items_id_seq
+CREATE SEQUENCE public."Torneos_id_seq"
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -540,515 +700,38 @@ CREATE SEQUENCE gestion_ventas.purchase_order_items_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE gestion_ventas.purchase_order_items_id_seq OWNER TO postgres;
+ALTER SEQUENCE public."Torneos_id_seq" OWNER TO postgres;
 
 --
--- Name: purchase_order_items_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
+-- Name: Torneos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE gestion_ventas.purchase_order_items_id_seq OWNED BY gestion_ventas.purchase_order_items.id;
+ALTER SEQUENCE public."Torneos_id_seq" OWNED BY public."Torneos".id;
 
 
 --
--- Name: purchase_orders; Type: TABLE; Schema: gestion_ventas; Owner: postgres
+-- Name: Users; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE gestion_ventas.purchase_orders (
-    id integer NOT NULL,
-    supplier_id integer NOT NULL,
-    status character varying(255) NOT NULL,
-    order_date date NOT NULL,
-    expected_date date,
-    notes text,
-    total numeric(14,2) DEFAULT 0 NOT NULL,
-    created_by integer NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.purchase_orders OWNER TO postgres;
-
---
--- Name: purchase_orders_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.purchase_orders_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.purchase_orders_id_seq OWNER TO postgres;
-
---
--- Name: purchase_orders_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.purchase_orders_id_seq OWNED BY gestion_ventas.purchase_orders.id;
-
-
---
--- Name: purchase_receipt_items; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.purchase_receipt_items (
-    id integer NOT NULL,
-    purchase_receipt_id integer NOT NULL,
-    product_id integer NOT NULL,
-    quantity_received integer NOT NULL,
-    unit_cost numeric(14,2) NOT NULL,
-    subtotal numeric(14,2) NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.purchase_receipt_items OWNER TO postgres;
-
---
--- Name: purchase_receipt_items_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.purchase_receipt_items_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.purchase_receipt_items_id_seq OWNER TO postgres;
-
---
--- Name: purchase_receipt_items_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.purchase_receipt_items_id_seq OWNED BY gestion_ventas.purchase_receipt_items.id;
-
-
---
--- Name: purchase_receipts; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.purchase_receipts (
-    id integer NOT NULL,
-    purchase_order_id integer NOT NULL,
-    receipt_date timestamp with time zone NOT NULL,
-    status character varying(255) NOT NULL,
-    notes text,
-    received_by integer NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.purchase_receipts OWNER TO postgres;
-
---
--- Name: purchase_receipts_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.purchase_receipts_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.purchase_receipts_id_seq OWNER TO postgres;
-
---
--- Name: purchase_receipts_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.purchase_receipts_id_seq OWNED BY gestion_ventas.purchase_receipts.id;
-
-
---
--- Name: refresh_tokens; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.refresh_tokens (
-    id integer NOT NULL,
-    user_id integer NOT NULL,
-    token_hash character varying(255) NOT NULL,
-    expires_at timestamp with time zone NOT NULL,
-    revoked_at timestamp with time zone,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.refresh_tokens OWNER TO postgres;
-
---
--- Name: refresh_tokens_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.refresh_tokens_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.refresh_tokens_id_seq OWNER TO postgres;
-
---
--- Name: refresh_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.refresh_tokens_id_seq OWNED BY gestion_ventas.refresh_tokens.id;
-
-
---
--- Name: role_permissions; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.role_permissions (
-    id integer NOT NULL,
-    role_id integer NOT NULL,
-    permission_id integer NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.role_permissions OWNER TO postgres;
-
---
--- Name: role_permissions_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.role_permissions_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.role_permissions_id_seq OWNER TO postgres;
-
---
--- Name: role_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.role_permissions_id_seq OWNED BY gestion_ventas.role_permissions.id;
-
-
---
--- Name: roles; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.roles (
-    id integer NOT NULL,
-    name character varying(255) NOT NULL,
-    description character varying(255)
-);
-
-
-ALTER TABLE gestion_ventas.roles OWNER TO postgres;
-
---
--- Name: roles_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.roles_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.roles_id_seq OWNER TO postgres;
-
---
--- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.roles_id_seq OWNED BY gestion_ventas.roles.id;
-
-
---
--- Name: sale_items; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.sale_items (
-    id integer NOT NULL,
-    sale_id integer NOT NULL,
-    product_id integer NOT NULL,
-    quantity integer NOT NULL,
-    unit_price numeric(14,2) NOT NULL,
-    unit_cost_snapshot numeric(14,2) NOT NULL,
-    discount numeric(14,2) DEFAULT 0 NOT NULL,
-    tax_rate numeric(10,2) DEFAULT 0 NOT NULL,
-    subtotal numeric(14,2) NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.sale_items OWNER TO postgres;
-
---
--- Name: sale_items_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.sale_items_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.sale_items_id_seq OWNER TO postgres;
-
---
--- Name: sale_items_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.sale_items_id_seq OWNED BY gestion_ventas.sale_items.id;
-
-
---
--- Name: sales; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.sales (
-    id integer NOT NULL,
-    client_id integer,
-    status character varying(255) NOT NULL,
-    sale_date timestamp with time zone NOT NULL,
-    payment_type character varying(255) NOT NULL,
-    subtotal numeric(14,2) DEFAULT 0 NOT NULL,
-    discount_total numeric(14,2) DEFAULT 0 NOT NULL,
-    tax_total numeric(14,2) DEFAULT 0 NOT NULL,
-    total numeric(14,2) DEFAULT 0 NOT NULL,
-    notes text,
-    created_by integer NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.sales OWNER TO postgres;
-
---
--- Name: sales_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.sales_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.sales_id_seq OWNER TO postgres;
-
---
--- Name: sales_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.sales_id_seq OWNED BY gestion_ventas.sales.id;
-
-
---
--- Name: stock_movements; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.stock_movements (
-    id integer NOT NULL,
-    product_id integer NOT NULL,
-    type character varying(255) NOT NULL,
-    quantity integer NOT NULL,
-    unit_cost numeric(14,2),
-    unit_price numeric(14,2),
-    reference_type character varying(255) NOT NULL,
-    reference_id integer,
-    notes text,
-    user_id integer NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.stock_movements OWNER TO postgres;
-
---
--- Name: stock_movements_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.stock_movements_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.stock_movements_id_seq OWNER TO postgres;
-
---
--- Name: stock_movements_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.stock_movements_id_seq OWNED BY gestion_ventas.stock_movements.id;
-
-
---
--- Name: supplier_account_movements; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.supplier_account_movements (
-    id integer NOT NULL,
-    supplier_id integer NOT NULL,
-    type character varying(255) NOT NULL,
-    amount numeric(14,2) NOT NULL,
-    reference_type character varying(255) NOT NULL,
-    reference_id integer,
-    notes text,
-    user_id integer NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.supplier_account_movements OWNER TO postgres;
-
---
--- Name: supplier_account_movements_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.supplier_account_movements_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.supplier_account_movements_id_seq OWNER TO postgres;
-
---
--- Name: supplier_account_movements_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.supplier_account_movements_id_seq OWNED BY gestion_ventas.supplier_account_movements.id;
-
-
---
--- Name: suppliers; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.suppliers (
-    id integer NOT NULL,
-    name character varying(255) NOT NULL,
-    document character varying(255) NOT NULL,
-    contact_name character varying(255),
-    phone character varying(255),
-    email character varying(255),
-    address character varying(255),
-    is_active boolean DEFAULT true NOT NULL,
-    created_by integer,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    deleted_at timestamp with time zone
-);
-
-
-ALTER TABLE gestion_ventas.suppliers OWNER TO postgres;
-
---
--- Name: suppliers_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.suppliers_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.suppliers_id_seq OWNER TO postgres;
-
---
--- Name: suppliers_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.suppliers_id_seq OWNED BY gestion_ventas.suppliers.id;
-
-
---
--- Name: user_roles; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.user_roles (
-    id integer NOT NULL,
-    user_id integer NOT NULL,
-    role_id integer NOT NULL
-);
-
-
-ALTER TABLE gestion_ventas.user_roles OWNER TO postgres;
-
---
--- Name: user_roles_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE SEQUENCE gestion_ventas.user_roles_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE gestion_ventas.user_roles_id_seq OWNER TO postgres;
-
---
--- Name: user_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER SEQUENCE gestion_ventas.user_roles_id_seq OWNED BY gestion_ventas.user_roles.id;
-
-
---
--- Name: users; Type: TABLE; Schema: gestion_ventas; Owner: postgres
---
-
-CREATE TABLE gestion_ventas.users (
+CREATE TABLE public."Users" (
     id integer NOT NULL,
     username character varying(255) NOT NULL,
     password_hash character varying(255) NOT NULL,
-    full_name character varying(255) NOT NULL,
-    email character varying(255),
-    is_active boolean DEFAULT true NOT NULL,
-    last_login_at timestamp with time zone,
-    created_by integer,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    role public."enum_Users_role" DEFAULT 'COMPLEJO'::public."enum_Users_role",
+    active boolean DEFAULT true,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    complejo_id integer
 );
 
 
-ALTER TABLE gestion_ventas.users OWNER TO postgres;
+ALTER TABLE public."Users" OWNER TO postgres;
 
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: gestion_ventas; Owner: postgres
+-- Name: Users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE gestion_ventas.users_id_seq
+CREATE SEQUENCE public."Users_id_seq"
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -1057,1386 +740,1902 @@ CREATE SEQUENCE gestion_ventas.users_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE gestion_ventas.users_id_seq OWNER TO postgres;
+ALTER SEQUENCE public."Users_id_seq" OWNER TO postgres;
 
 --
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: gestion_ventas; Owner: postgres
+-- Name: Users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE gestion_ventas.users_id_seq OWNED BY gestion_ventas.users.id;
-
-
---
--- Name: audit_logs id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.audit_logs ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.audit_logs_id_seq'::regclass);
+ALTER SEQUENCE public."Users_id_seq" OWNED BY public."Users".id;
 
 
 --
--- Name: cash_movements id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
+-- Name: Venta; Type: TABLE; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.cash_movements ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.cash_movements_id_seq'::regclass);
+CREATE TABLE public."Venta" (
+    id integer NOT NULL,
+    total numeric(10,2) DEFAULT 0,
+    metodo_pago public."enum_Venta_metodo_pago" DEFAULT 'EFECTIVO'::public."enum_Venta_metodo_pago",
+    descuento_monto numeric(10,2) DEFAULT 0,
+    descuento_porcentaje double precision DEFAULT '0'::double precision,
+    created_at timestamp with time zone,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    caja_id integer,
+    torneo_id integer,
+    complejo_id integer,
+    created_by integer,
+    detalle_cortesia character varying(255),
+    total_pagado numeric(10,2) DEFAULT 0,
+    pagos json
+);
 
 
---
--- Name: cash_registers id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.cash_registers ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.cash_registers_id_seq'::regclass);
-
-
---
--- Name: client_account_movements id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.client_account_movements ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.client_account_movements_id_seq'::regclass);
-
-
---
--- Name: clients id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.clients ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.clients_id_seq'::regclass);
-
+ALTER TABLE public."Venta" OWNER TO postgres;
 
 --
--- Name: credit_note_items id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
+-- Name: VentaItems; Type: TABLE; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.credit_note_items ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.credit_note_items_id_seq'::regclass);
+CREATE TABLE public."VentaItems" (
+    id integer NOT NULL,
+    cantidad integer NOT NULL,
+    costo_unitario_snapshot numeric(10,2) NOT NULL,
+    precio_unitario_snapshot numeric(10,2) NOT NULL,
+    subtotal numeric(10,2) NOT NULL,
+    ganancia numeric(10,2) NOT NULL,
+    "createdAt" timestamp with time zone NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    venta_id integer,
+    producto_id integer,
+    tipo public."enum_VentaItems_tipo" DEFAULT 'GANANCIA'::public."enum_VentaItems_tipo"
+);
 
 
---
--- Name: credit_notes id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.credit_notes ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.credit_notes_id_seq'::regclass);
-
-
---
--- Name: expense_categories id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.expense_categories ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.expense_categories_id_seq'::regclass);
-
-
---
--- Name: permissions id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.permissions ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.permissions_id_seq'::regclass);
-
+ALTER TABLE public."VentaItems" OWNER TO postgres;
 
 --
--- Name: product_categories id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
+-- Name: VentaItems_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.product_categories ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.product_categories_id_seq'::regclass);
+CREATE SEQUENCE public."VentaItems_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
+
+ALTER SEQUENCE public."VentaItems_id_seq" OWNER TO postgres;
 
 --
--- Name: products id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
+-- Name: VentaItems_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.products ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.products_id_seq'::regclass);
+ALTER SEQUENCE public."VentaItems_id_seq" OWNED BY public."VentaItems".id;
 
 
 --
--- Name: purchase_order_items id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
+-- Name: Venta_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_order_items ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.purchase_order_items_id_seq'::regclass);
+CREATE SEQUENCE public."Venta_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
---
--- Name: purchase_orders id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.purchase_orders ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.purchase_orders_id_seq'::regclass);
-
-
---
--- Name: purchase_receipt_items id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.purchase_receipt_items ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.purchase_receipt_items_id_seq'::regclass);
-
+ALTER SEQUENCE public."Venta_id_seq" OWNER TO postgres;
 
 --
--- Name: purchase_receipts id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
+-- Name: Venta_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_receipts ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.purchase_receipts_id_seq'::regclass);
+ALTER SEQUENCE public."Venta_id_seq" OWNED BY public."Venta".id;
 
 
 --
--- Name: refresh_tokens id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
+-- Name: Cajas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.refresh_tokens ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.refresh_tokens_id_seq'::regclass);
-
-
---
--- Name: role_permissions id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.role_permissions ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.role_permissions_id_seq'::regclass);
+ALTER TABLE ONLY public."Cajas" ALTER COLUMN id SET DEFAULT nextval('public."Cajas_id_seq"'::regclass);
 
 
 --
--- Name: roles id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
+-- Name: Complejos id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.roles ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.roles_id_seq'::regclass);
-
-
---
--- Name: sale_items id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.sale_items ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.sale_items_id_seq'::regclass);
+ALTER TABLE ONLY public."Complejos" ALTER COLUMN id SET DEFAULT nextval('public."Complejos_id_seq"'::regclass);
 
 
 --
--- Name: sales id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
+-- Name: DevolucionItems id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.sales ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.sales_id_seq'::regclass);
-
-
---
--- Name: stock_movements id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.stock_movements ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.stock_movements_id_seq'::regclass);
+ALTER TABLE ONLY public."DevolucionItems" ALTER COLUMN id SET DEFAULT nextval('public."DevolucionItems_id_seq"'::regclass);
 
 
 --
--- Name: supplier_account_movements id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
+-- Name: Devolucions id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.supplier_account_movements ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.supplier_account_movements_id_seq'::regclass);
-
-
---
--- Name: suppliers id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.suppliers ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.suppliers_id_seq'::regclass);
+ALTER TABLE ONLY public."Devolucions" ALTER COLUMN id SET DEFAULT nextval('public."Devolucions_id_seq"'::regclass);
 
 
 --
--- Name: user_roles id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
+-- Name: Gastos id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.user_roles ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.user_roles_id_seq'::regclass);
-
-
---
--- Name: users id; Type: DEFAULT; Schema: gestion_ventas; Owner: postgres
---
-
-ALTER TABLE ONLY gestion_ventas.users ALTER COLUMN id SET DEFAULT nextval('gestion_ventas.users_id_seq'::regclass);
+ALTER TABLE ONLY public."Gastos" ALTER COLUMN id SET DEFAULT nextval('public."Gastos_id_seq"'::regclass);
 
 
 --
--- Data for Name: SequelizeData; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Name: InventarioComplejos id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas."SequelizeData" (name) FROM stdin;
-20260113000200-seed-roles-permissions-admin.cjs
-20260113000500-seed-expense-categories.cjs
-20260113000600-assign-sales-permissions-to-sales-role.cjs
+ALTER TABLE ONLY public."InventarioComplejos" ALTER COLUMN id SET DEFAULT nextval('public."InventarioComplejos_id_seq"'::regclass);
+
+
+--
+-- Name: InventarioGenerals id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."InventarioGenerals" ALTER COLUMN id SET DEFAULT nextval('public."InventarioGenerals_id_seq"'::regclass);
+
+
+--
+-- Name: MovimientoStocks id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."MovimientoStocks" ALTER COLUMN id SET DEFAULT nextval('public."MovimientoStocks_id_seq"'::regclass);
+
+
+--
+-- Name: NotaCompraItems id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."NotaCompraItems" ALTER COLUMN id SET DEFAULT nextval('public."NotaCompraItems_id_seq"'::regclass);
+
+
+--
+-- Name: NotaCompras id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."NotaCompras" ALTER COLUMN id SET DEFAULT nextval('public."NotaCompras_id_seq"'::regclass);
+
+
+--
+-- Name: OrdenTransferencia id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."OrdenTransferencia" ALTER COLUMN id SET DEFAULT nextval('public."OrdenTransferencia_id_seq"'::regclass);
+
+
+--
+-- Name: OrdenTransferenciaItems id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."OrdenTransferenciaItems" ALTER COLUMN id SET DEFAULT nextval('public."OrdenTransferenciaItems_id_seq"'::regclass);
+
+
+--
+-- Name: Productos id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Productos" ALTER COLUMN id SET DEFAULT nextval('public."Productos_id_seq"'::regclass);
+
+
+--
+-- Name: Torneos id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Torneos" ALTER COLUMN id SET DEFAULT nextval('public."Torneos_id_seq"'::regclass);
+
+
+--
+-- Name: Users id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users" ALTER COLUMN id SET DEFAULT nextval('public."Users_id_seq"'::regclass);
+
+
+--
+-- Name: Venta id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Venta" ALTER COLUMN id SET DEFAULT nextval('public."Venta_id_seq"'::regclass);
+
+
+--
+-- Name: VentaItems id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."VentaItems" ALTER COLUMN id SET DEFAULT nextval('public."VentaItems_id_seq"'::regclass);
+
+
+--
+-- Data for Name: Cajas; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Cajas" (id, estado, monto_inicial, monto_final, opened_at, closed_at, "createdAt", "updatedAt", torneo_id, complejo_id, opened_by, closed_by) FROM stdin;
+7	ABIERTA	5000.00	\N	2026-03-12 09:52:01.926-03	\N	2026-03-12 09:52:01.927-03	2026-03-12 09:52:01.927-03	5	2	3	\N
+6	CERRADA	0.00	3000.00	2026-02-05 14:54:31.26-03	2026-03-12 10:26:48.676-03	2026-02-05 14:54:31.261-03	2026-03-12 10:26:48.677-03	5	1	2	2
 \.
 
 
 --
--- Data for Name: SequelizeMeta; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: Complejos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas."SequelizeMeta" (name) FROM stdin;
-20260113000100-create-security-tables.cjs
-20260113000300-create-products-stock.cjs
-20260113000400-create-cash.cjs
-20260113000600-create-clients-sales.cjs
-20260113000700-create-suppliers-purchases.cjs
-20260113000800-create-credit-notes.cjs
-20260113120000-create-audit-logs.cjs
-20260113120100-add-audit-permission.cjs
+COPY public."Complejos" (id, nombre, direccion, "createdAt", "updatedAt") FROM stdin;
+1	Complejo Central	Av. Principal 123	2026-01-26 10:03:48.158-03	2026-01-26 10:03:48.158-03
+2	Complejo Norte	Calle Norte 456	2026-01-26 10:03:48.16-03	2026-01-26 10:03:48.16-03
 \.
 
 
 --
--- Data for Name: audit_logs; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: DevolucionItems; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.audit_logs (id, entity_type, entity_id, action, old_values, new_values, user_id, ip_address, user_agent, created_at) FROM stdin;
+COPY public."DevolucionItems" (id, producto_id, cantidad, costo_unitario_snapshot, subtotal, "createdAt", "updatedAt", devolucion_id) FROM stdin;
 \.
 
 
 --
--- Data for Name: cash_movements; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: Devolucions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.cash_movements (id, cash_register_id, type, amount, payment_method, expense_category_id, reference_type, reference_id, description, user_id, created_at) FROM stdin;
+COPY public."Devolucions" (id, created_at, "createdAt", "updatedAt", caja_id, created_by) FROM stdin;
 \.
 
 
 --
--- Data for Name: cash_registers; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: Gastos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.cash_registers (id, date, user_id, status, opening_balance, closing_balance, closed_at, notes, created_at, updated_at) FROM stdin;
+COPY public."Gastos" (id, monto, descripcion, categoria, created_at, "createdAt", "updatedAt", caja_id, created_by) FROM stdin;
 \.
 
 
 --
--- Data for Name: client_account_movements; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: InventarioComplejos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.client_account_movements (id, client_id, type, amount, reference_type, reference_id, notes, user_id, created_at) FROM stdin;
+COPY public."InventarioComplejos" (id, stock, "createdAt", "updatedAt", producto_id, complejo_id) FROM stdin;
+2	20	2026-02-05 14:53:13.422-03	2026-02-05 14:53:13.434-03	2	1
+4	20	2026-02-06 10:51:58.387-03	2026-02-06 10:51:58.453-03	2	2
+5	50	2026-02-06 10:51:58.47-03	2026-02-06 10:51:58.475-03	3	2
+3	13	2026-02-05 14:53:13.451-03	2026-03-11 00:18:04.255-03	1	1
 \.
 
 
 --
--- Data for Name: clients; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: InventarioGenerals; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.clients (id, name, document, phone, email, address, tax_condition, is_active, created_by, created_at, updated_at, deleted_at) FROM stdin;
+COPY public."InventarioGenerals" (id, stock, "createdAt", "updatedAt", producto_id) FROM stdin;
+1	385	2026-01-26 10:03:48.319-03	2026-02-06 10:45:18.108-03	1
+3	173	2026-01-26 10:03:48.337-03	2026-02-09 10:40:48.12-03	3
+2	123	2026-01-26 10:03:48.329-03	2026-02-09 10:40:48.133-03	2
 \.
 
 
 --
--- Data for Name: credit_note_items; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: MovimientoStocks; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.credit_note_items (id, credit_note_id, product_id, quantity, unit_price, subtotal) FROM stdin;
+COPY public."MovimientoStocks" (id, scope, tipo, cantidad_signed, stock_resultante, ref_tipo, ref_id, created_at, "createdAt", "updatedAt", producto_id, complejo_id, torneo_id, created_by) FROM stdin;
+10	GENERAL	TRANSFER_OUT_GENERAL	-20	130	OrdenTransferencia	5	2026-02-05 14:53:13.41-03	2026-02-05 14:53:13.41-03	2026-02-05 14:53:13.41-03	2	\N	\N	1
+11	COMPLEJO	TRANSFER_IN_COMPLEX	20	20	OrdenTransferencia	5	2026-02-05 14:53:13.439-03	2026-02-05 14:53:13.439-03	2026-02-05 14:53:13.439-03	2	1	\N	1
+12	GENERAL	TRANSFER_OUT_GENERAL	-15	185	OrdenTransferencia	5	2026-02-05 14:53:13.446-03	2026-02-05 14:53:13.446-03	2026-02-05 14:53:13.446-03	1	\N	\N	1
+13	COMPLEJO	TRANSFER_IN_COMPLEX	15	15	OrdenTransferencia	5	2026-02-05 14:53:13.457-03	2026-02-05 14:53:13.457-03	2026-02-05 14:53:13.457-03	1	1	\N	1
+14	COMPLEJO	SALE_OUT	-1	14	Venta	3	2026-02-05 14:54:50.66-03	2026-02-05 14:54:50.66-03	2026-02-05 14:54:50.66-03	1	1	5	2
+15	GENERAL	PURCHASE_IN	200	385	NotaCompra	3	2026-02-06 10:45:18.112-03	2026-02-06 10:45:18.113-03	2026-02-06 10:45:18.113-03	1	\N	\N	1
+16	GENERAL	TRANSFER_OUT_GENERAL	-20	110	OrdenTransferencia	6	2026-02-06 10:51:58.376-03	2026-02-06 10:51:58.376-03	2026-02-06 10:51:58.376-03	2	\N	\N	1
+17	COMPLEJO	TRANSFER_IN_COMPLEX	20	20	OrdenTransferencia	6	2026-02-06 10:51:58.456-03	2026-02-06 10:51:58.456-03	2026-02-06 10:51:58.456-03	2	2	\N	1
+18	GENERAL	TRANSFER_OUT_GENERAL	-50	150	OrdenTransferencia	6	2026-02-06 10:51:58.465-03	2026-02-06 10:51:58.465-03	2026-02-06 10:51:58.465-03	3	\N	\N	1
+19	COMPLEJO	TRANSFER_IN_COMPLEX	50	50	OrdenTransferencia	6	2026-02-06 10:51:58.478-03	2026-02-06 10:51:58.478-03	2026-02-06 10:51:58.478-03	3	2	\N	1
+20	GENERAL	PURCHASE_IN	23	173	NotaCompra	4	2026-02-09 10:40:48.122-03	2026-02-09 10:40:48.122-03	2026-02-09 10:40:48.122-03	3	\N	\N	1
+21	GENERAL	PURCHASE_IN	13	123	NotaCompra	4	2026-02-09 10:40:48.136-03	2026-02-09 10:40:48.136-03	2026-02-09 10:40:48.136-03	2	\N	\N	1
+22	COMPLEJO	SALE_OUT	-1	13	Venta	4	2026-03-11 00:18:04.265-03	2026-03-11 00:18:04.266-03	2026-03-11 00:18:04.266-03	1	1	5	2
 \.
 
 
 --
--- Data for Name: credit_notes; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: NotaCompraItems; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.credit_notes (id, sale_id, client_id, status, date, total, return_to_stock, created_by, created_at, updated_at) FROM stdin;
+COPY public."NotaCompraItems" (id, cantidad, costo_unitario_snapshot, "createdAt", "updatedAt", nota_id, producto_id) FROM stdin;
+7	200	900.00	2026-02-06 10:45:18.056-03	2026-02-06 10:45:18.056-03	3	1
+8	23	6000.00	2026-02-09 10:40:48.098-03	2026-02-09 10:40:48.098-03	4	3
+9	13	5500.00	2026-02-09 10:40:48.126-03	2026-02-09 10:40:48.126-03	4	2
 \.
 
 
 --
--- Data for Name: expense_categories; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: NotaCompras; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.expense_categories (id, name, is_active, created_by, created_at, updated_at) FROM stdin;
-1	Servicios	t	\N	2026-01-20 12:57:38.15-03	2026-01-20 12:57:38.15-03
-2	Alquiler	t	\N	2026-01-20 12:57:38.15-03	2026-01-20 12:57:38.15-03
-3	Impuestos	t	\N	2026-01-20 12:57:38.15-03	2026-01-20 12:57:38.15-03
-4	Insumos	t	\N	2026-01-20 12:57:38.15-03	2026-01-20 12:57:38.15-03
+COPY public."NotaCompras" (id, fecha, proveedor, observaciones, "createdAt", "updatedAt", created_by) FROM stdin;
+1	2026-01-26 10:03:48.31-03	Proveedor Demo	Stock inicial seed	2026-01-26 10:03:48.31-03	2026-01-26 10:03:48.31-03	1
+2	2026-02-05 10:10:18.382-03	Proveedor Demo	Stock inicial seed	2026-02-05 10:10:18.382-03	2026-02-05 10:10:18.382-03	1
+3	2026-02-06 10:45:17.998-03			2026-02-06 10:45:18-03	2026-02-06 10:45:18-03	1
+4	2026-02-09 10:40:48.057-03			2026-02-09 10:40:48.058-03	2026-02-09 10:40:48.058-03	1
 \.
 
 
 --
--- Data for Name: permissions; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: OrdenTransferencia; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.permissions (id, key, module, description) FROM stdin;
-24	audit.read	security	Ver historial de auditoría
-1	users.read	security	Ver usuarios
-2	users.write	security	Gestionar usuarios
-3	roles.read	security	Ver roles
-4	roles.write	security	Gestionar roles
-5	products.read	products	Ver productos
-6	products.write	products	Gestionar productos
-13	clients.read	clients	Ver clientes
-14	clients.write	clients	Gestionar clientes
-7	sales.read	sales	Ver ventas
-15	sales.write	sales	Gestionar ventas
-8	sales.confirm	sales	Confirmar venta
-9	cash.open	cash	Abrir caja
-10	cash.close	cash	Cerrar caja
-11	cash.read	cash	Ver caja
-12	cash.movements.write	cash	Cargar movimientos de caja
-16	suppliers.read	purchases	Ver proveedores
-17	suppliers.write	purchases	Gestionar proveedores
-18	purchases.read	purchases	Ver compras
-19	purchases.write	purchases	Gestionar órdenes de compra
-20	purchases.receive	purchases	Confirmar recepción
-21	credit_notes.read	credit_notes	Ver notas de crédito
-22	credit_notes.write	credit_notes	Gestionar notas de crédito
-23	credit_notes.confirm	credit_notes	Confirmar notas de crédito
+COPY public."OrdenTransferencia" (id, estado, fecha, "createdAt", "updatedAt", complejo_id, created_by, es_gasto) FROM stdin;
+5	CONFIRMADA	2026-02-05 14:53:11.056-03	2026-02-05 14:53:11.056-03	2026-02-05 14:53:13.459-03	1	1	f
+6	CONFIRMADA	2026-02-06 10:51:52.405-03	2026-02-06 10:51:52.406-03	2026-02-06 10:51:58.48-03	2	1	f
+7	BORRADOR	2026-03-11 00:08:33.638-03	2026-03-11 00:08:33.64-03	2026-03-11 00:08:33.64-03	2	1	f
+8	BORRADOR	2026-03-12 10:29:41.38-03	2026-03-12 10:29:41.382-03	2026-03-12 10:29:41.382-03	1	1	t
 \.
 
 
 --
--- Data for Name: product_categories; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: OrdenTransferenciaItems; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.product_categories (id, name, is_active, created_by, created_at, updated_at) FROM stdin;
+COPY public."OrdenTransferenciaItems" (id, cantidad, "createdAt", "updatedAt", orden_id, producto_id, es_gasto) FROM stdin;
+5	20	2026-02-05 14:53:11.061-03	2026-02-05 14:53:11.061-03	5	2	f
+6	15	2026-02-05 14:53:11.065-03	2026-02-05 14:53:11.065-03	5	1	f
+7	20	2026-02-06 10:51:52.45-03	2026-02-06 10:51:52.45-03	6	2	f
+8	50	2026-02-06 10:51:52.476-03	2026-02-06 10:51:52.476-03	6	3	f
+9	5	2026-03-11 00:08:33.688-03	2026-03-11 00:08:33.688-03	7	2	f
+10	50	2026-03-12 10:29:41.437-03	2026-03-12 10:29:41.437-03	8	2	f
 \.
 
 
 --
--- Data for Name: products; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: Productos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.products (id, sku, barcode, name, description, category_id, unit, location, is_active, stock_min, stock_current, tax_rate, cost, price_retail, price_wholesale, price_promo, created_by, created_at, updated_at, deleted_at) FROM stdin;
+COPY public."Productos" (id, sku, nombre, unidad, costo_unitario, precio_venta_unitario, activo, "createdAt", "updatedAt", solo_admin) FROM stdin;
+1	BEB-001	Coca Cola 500ml	un	900.00	1500.00	t	2026-01-26 10:03:48.294-03	2026-02-06 10:45:18.099-03	f
+3	SNK-001	Papas Lays	un	6000.00	1200.00	t	2026-01-26 10:03:48.306-03	2026-02-09 10:40:48.111-03	f
+2	BEB-002	Agua Mineral 500ml	un	5500.00	7500.00	t	2026-01-26 10:03:48.303-03	2026-02-09 10:41:19.546-03	f
 \.
 
 
 --
--- Data for Name: purchase_order_items; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: Torneos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.purchase_order_items (id, purchase_order_id, product_id, quantity, unit_cost, tax_rate, subtotal) FROM stdin;
+COPY public."Torneos" (id, nombre, fecha_inicio, fecha_fin, estado, created_at, updated_at) FROM stdin;
+5	torneo prueba	2026-02-05	\N	ACTIVO	2026-02-05 14:52:58.657-03	2026-02-05 14:52:58.657-03
 \.
 
 
 --
--- Data for Name: purchase_orders; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: Users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.purchase_orders (id, supplier_id, status, order_date, expected_date, notes, total, created_by, created_at, updated_at) FROM stdin;
+COPY public."Users" (id, username, password_hash, role, active, "createdAt", "updatedAt", complejo_id) FROM stdin;
+1	admin	$2b$10$fWvbqIN9PcW2AjAbKsB/R.x9wHvNc9IYhLRLPaiFC7/PpemBF6Mem	ADMIN	t	2026-01-26 10:03:48.145-03	2026-01-26 10:03:48.145-03	\N
+2	user_1	$2b$10$qMYRKz0Usv83y4.z9yOaeOm/Y8RrVsvnoeXwzQnKunCHwlYYSfvR6	COMPLEJO	t	2026-01-26 10:03:48.226-03	2026-01-26 10:03:48.226-03	1
+3	user_2	$2b$10$IMVUkpqpBM6s3mDRpw0Y1OO8CTyXQbk6uBWtbxv/eTFOzn1oCyOqa	COMPLEJO	t	2026-01-26 10:03:48.291-03	2026-01-26 10:03:48.291-03	2
 \.
 
 
 --
--- Data for Name: purchase_receipt_items; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: Venta; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.purchase_receipt_items (id, purchase_receipt_id, product_id, quantity_received, unit_cost, subtotal) FROM stdin;
+COPY public."Venta" (id, total, metodo_pago, descuento_monto, descuento_porcentaje, created_at, "createdAt", "updatedAt", caja_id, torneo_id, complejo_id, created_by, detalle_cortesia, total_pagado, pagos) FROM stdin;
+3	1500.00	EFECTIVO	0.00	0	2026-02-05 14:54:50.619-03	2026-02-05 14:54:50.619-03	2026-02-05 14:54:50.664-03	6	5	1	2	\N	0.00	\N
+4	1500.00	EFECTIVO	0.00	0	2026-03-11 00:18:04.191-03	2026-03-11 00:18:04.191-03	2026-03-11 00:18:04.274-03	6	5	1	2	\N	0.00	\N
 \.
 
 
 --
--- Data for Name: purchase_receipts; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Data for Name: VentaItems; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.purchase_receipts (id, purchase_order_id, receipt_date, status, notes, received_by) FROM stdin;
+COPY public."VentaItems" (id, cantidad, costo_unitario_snapshot, precio_unitario_snapshot, subtotal, ganancia, "createdAt", "updatedAt", venta_id, producto_id, tipo) FROM stdin;
+3	1	900.00	1500.00	1500.00	600.00	2026-02-05 14:54:50.651-03	2026-02-05 14:54:50.651-03	3	1	GANANCIA
+4	1	900.00	1500.00	1500.00	600.00	2026-03-11 00:18:04.245-03	2026-03-11 00:18:04.245-03	4	1	GANANCIA
 \.
 
 
 --
--- Data for Name: refresh_tokens; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Name: Cajas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.refresh_tokens (id, user_id, token_hash, expires_at, revoked_at, created_at) FROM stdin;
-1	1	28ae990a2df47cbc57517aac35f239e87917fb2802aa9e90b73d9a88e540cb22	2026-01-27 13:58:48.372-03	\N	2026-01-20 13:58:48.372-03
-\.
+SELECT pg_catalog.setval('public."Cajas_id_seq"', 7, true);
 
 
 --
--- Data for Name: role_permissions; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Name: Complejos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.role_permissions (id, role_id, permission_id) FROM stdin;
-1	1	1
-2	1	2
-3	1	3
-4	1	4
-5	1	5
-6	1	6
-7	1	7
-8	1	8
-9	1	9
-10	1	10
-11	1	11
-12	1	12
-13	1	13
-14	1	14
-15	1	15
-16	1	16
-17	1	17
-18	1	18
-19	1	19
-20	1	20
-21	1	21
-22	1	22
-23	1	23
-24	2	7
-25	2	15
-26	2	8
-\.
+SELECT pg_catalog.setval('public."Complejos_id_seq"', 2, true);
 
 
 --
--- Data for Name: roles; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Name: DevolucionItems_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.roles (id, name, description) FROM stdin;
-1	ADMIN	Administrador
-2	VENTAS	Ventas
-3	CAJA	Caja
-4	STOCK	Stock
-\.
+SELECT pg_catalog.setval('public."DevolucionItems_id_seq"', 1, false);
 
 
 --
--- Data for Name: sale_items; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Name: Devolucions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.sale_items (id, sale_id, product_id, quantity, unit_price, unit_cost_snapshot, discount, tax_rate, subtotal) FROM stdin;
-\.
+SELECT pg_catalog.setval('public."Devolucions_id_seq"', 1, false);
 
 
 --
--- Data for Name: sales; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Name: Gastos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.sales (id, client_id, status, sale_date, payment_type, subtotal, discount_total, tax_total, total, notes, created_by, created_at, updated_at) FROM stdin;
-\.
+SELECT pg_catalog.setval('public."Gastos_id_seq"', 1, false);
 
 
 --
--- Data for Name: stock_movements; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Name: InventarioComplejos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.stock_movements (id, product_id, type, quantity, unit_cost, unit_price, reference_type, reference_id, notes, user_id, created_at) FROM stdin;
-\.
+SELECT pg_catalog.setval('public."InventarioComplejos_id_seq"', 5, true);
 
 
 --
--- Data for Name: supplier_account_movements; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Name: InventarioGenerals_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.supplier_account_movements (id, supplier_id, type, amount, reference_type, reference_id, notes, user_id, created_at) FROM stdin;
-\.
+SELECT pg_catalog.setval('public."InventarioGenerals_id_seq"', 3, true);
 
 
 --
--- Data for Name: suppliers; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Name: MovimientoStocks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.suppliers (id, name, document, contact_name, phone, email, address, is_active, created_by, created_at, updated_at, deleted_at) FROM stdin;
-\.
+SELECT pg_catalog.setval('public."MovimientoStocks_id_seq"', 22, true);
 
 
 --
--- Data for Name: user_roles; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Name: NotaCompraItems_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.user_roles (id, user_id, role_id) FROM stdin;
-1	1	1
-\.
+SELECT pg_catalog.setval('public."NotaCompraItems_id_seq"', 9, true);
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: gestion_ventas; Owner: postgres
+-- Name: NotaCompras_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-COPY gestion_ventas.users (id, username, password_hash, full_name, email, is_active, last_login_at, created_by, created_at, updated_at) FROM stdin;
-1	admin	$2a$10$B.HoLAwJGmkd9C.utkoR2uR7ISqjWbOIt6kPl/1UON56xrfag5AMK	Administrador	\N	t	2026-01-20 13:58:48.352-03	\N	2026-01-20 12:57:38.139-03	2026-01-20 13:58:48.354-03
-\.
+SELECT pg_catalog.setval('public."NotaCompras_id_seq"', 4, true);
 
 
 --
--- Name: audit_logs_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: OrdenTransferenciaItems_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.audit_logs_id_seq', 1, false);
+SELECT pg_catalog.setval('public."OrdenTransferenciaItems_id_seq"', 10, true);
 
 
 --
--- Name: cash_movements_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: OrdenTransferencia_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.cash_movements_id_seq', 1, false);
+SELECT pg_catalog.setval('public."OrdenTransferencia_id_seq"', 8, true);
 
 
 --
--- Name: cash_registers_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.cash_registers_id_seq', 1, false);
+SELECT pg_catalog.setval('public."Productos_id_seq"', 3, true);
 
 
 --
--- Name: client_account_movements_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Torneos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.client_account_movements_id_seq', 1, false);
+SELECT pg_catalog.setval('public."Torneos_id_seq"', 5, true);
 
 
 --
--- Name: clients_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.clients_id_seq', 1, false);
+SELECT pg_catalog.setval('public."Users_id_seq"', 3, true);
 
 
 --
--- Name: credit_note_items_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: VentaItems_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.credit_note_items_id_seq', 1, false);
+SELECT pg_catalog.setval('public."VentaItems_id_seq"', 4, true);
 
 
 --
--- Name: credit_notes_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Venta_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.credit_notes_id_seq', 1, false);
+SELECT pg_catalog.setval('public."Venta_id_seq"', 4, true);
 
 
 --
--- Name: expense_categories_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Cajas Cajas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.expense_categories_id_seq', 4, true);
+ALTER TABLE ONLY public."Cajas"
+    ADD CONSTRAINT "Cajas_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: permissions_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Complejos Complejos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.permissions_id_seq', 1, false);
+ALTER TABLE ONLY public."Complejos"
+    ADD CONSTRAINT "Complejos_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: product_categories_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: DevolucionItems DevolucionItems_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.product_categories_id_seq', 1, false);
+ALTER TABLE ONLY public."DevolucionItems"
+    ADD CONSTRAINT "DevolucionItems_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: products_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Devolucions Devolucions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.products_id_seq', 1, false);
+ALTER TABLE ONLY public."Devolucions"
+    ADD CONSTRAINT "Devolucions_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: purchase_order_items_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Gastos Gastos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.purchase_order_items_id_seq', 1, false);
+ALTER TABLE ONLY public."Gastos"
+    ADD CONSTRAINT "Gastos_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: purchase_orders_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: InventarioComplejos InventarioComplejos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.purchase_orders_id_seq', 1, false);
+ALTER TABLE ONLY public."InventarioComplejos"
+    ADD CONSTRAINT "InventarioComplejos_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: purchase_receipt_items_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: InventarioGenerals InventarioGenerals_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.purchase_receipt_items_id_seq', 1, false);
+ALTER TABLE ONLY public."InventarioGenerals"
+    ADD CONSTRAINT "InventarioGenerals_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: purchase_receipts_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: MovimientoStocks MovimientoStocks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.purchase_receipts_id_seq', 1, false);
+ALTER TABLE ONLY public."MovimientoStocks"
+    ADD CONSTRAINT "MovimientoStocks_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: NotaCompraItems NotaCompraItems_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.refresh_tokens_id_seq', 1, true);
+ALTER TABLE ONLY public."NotaCompraItems"
+    ADD CONSTRAINT "NotaCompraItems_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: role_permissions_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: NotaCompras NotaCompras_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.role_permissions_id_seq', 26, true);
+ALTER TABLE ONLY public."NotaCompras"
+    ADD CONSTRAINT "NotaCompras_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: roles_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: OrdenTransferenciaItems OrdenTransferenciaItems_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.roles_id_seq', 1, false);
+ALTER TABLE ONLY public."OrdenTransferenciaItems"
+    ADD CONSTRAINT "OrdenTransferenciaItems_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: sale_items_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: OrdenTransferencia OrdenTransferencia_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.sale_items_id_seq', 1, false);
+ALTER TABLE ONLY public."OrdenTransferencia"
+    ADD CONSTRAINT "OrdenTransferencia_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: sales_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.sales_id_seq', 1, false);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: stock_movements_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.stock_movements_id_seq', 1, false);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key" UNIQUE (sku);
 
 
 --
--- Name: supplier_account_movements_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key1; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.supplier_account_movements_id_seq', 1, false);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key1" UNIQUE (sku);
 
 
 --
--- Name: suppliers_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key10; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.suppliers_id_seq', 1, false);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key10" UNIQUE (sku);
 
 
 --
--- Name: user_roles_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key11; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.user_roles_id_seq', 1, true);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key11" UNIQUE (sku);
 
 
 --
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key12; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('gestion_ventas.users_id_seq', 1, false);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key12" UNIQUE (sku);
 
 
 --
--- Name: SequelizeData SequelizeData_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key13; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas."SequelizeData"
-    ADD CONSTRAINT "SequelizeData_pkey" PRIMARY KEY (name);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key13" UNIQUE (sku);
 
 
 --
--- Name: SequelizeMeta SequelizeMeta_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key14; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas."SequelizeMeta"
-    ADD CONSTRAINT "SequelizeMeta_pkey" PRIMARY KEY (name);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key14" UNIQUE (sku);
 
 
 --
--- Name: audit_logs audit_logs_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key15; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.audit_logs
-    ADD CONSTRAINT audit_logs_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key15" UNIQUE (sku);
 
 
 --
--- Name: cash_movements cash_movements_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key16; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.cash_movements
-    ADD CONSTRAINT cash_movements_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key16" UNIQUE (sku);
 
 
 --
--- Name: cash_registers cash_registers_date_user_id_unique; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key17; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.cash_registers
-    ADD CONSTRAINT cash_registers_date_user_id_unique UNIQUE (date, user_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key17" UNIQUE (sku);
 
 
 --
--- Name: cash_registers cash_registers_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key18; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.cash_registers
-    ADD CONSTRAINT cash_registers_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key18" UNIQUE (sku);
 
 
 --
--- Name: client_account_movements client_account_movements_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key19; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.client_account_movements
-    ADD CONSTRAINT client_account_movements_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key19" UNIQUE (sku);
 
 
 --
--- Name: clients clients_document_key; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key2; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.clients
-    ADD CONSTRAINT clients_document_key UNIQUE (document);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key2" UNIQUE (sku);
 
 
 --
--- Name: clients clients_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key20; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.clients
-    ADD CONSTRAINT clients_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key20" UNIQUE (sku);
 
 
 --
--- Name: credit_note_items credit_note_items_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key21; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.credit_note_items
-    ADD CONSTRAINT credit_note_items_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key21" UNIQUE (sku);
 
 
 --
--- Name: credit_notes credit_notes_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key22; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.credit_notes
-    ADD CONSTRAINT credit_notes_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key22" UNIQUE (sku);
 
 
 --
--- Name: expense_categories expense_categories_name_key; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key23; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.expense_categories
-    ADD CONSTRAINT expense_categories_name_key UNIQUE (name);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key23" UNIQUE (sku);
 
 
 --
--- Name: expense_categories expense_categories_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key24; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.expense_categories
-    ADD CONSTRAINT expense_categories_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key24" UNIQUE (sku);
 
 
 --
--- Name: permissions permissions_key_key; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key25; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.permissions
-    ADD CONSTRAINT permissions_key_key UNIQUE (key);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key25" UNIQUE (sku);
 
 
 --
--- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key26; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.permissions
-    ADD CONSTRAINT permissions_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key26" UNIQUE (sku);
 
 
 --
--- Name: product_categories product_categories_name_key; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key27; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.product_categories
-    ADD CONSTRAINT product_categories_name_key UNIQUE (name);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key27" UNIQUE (sku);
 
 
 --
--- Name: product_categories product_categories_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key28; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.product_categories
-    ADD CONSTRAINT product_categories_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key28" UNIQUE (sku);
 
 
 --
--- Name: products products_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key29; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.products
-    ADD CONSTRAINT products_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key29" UNIQUE (sku);
 
 
 --
--- Name: products products_sku_key; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key3; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.products
-    ADD CONSTRAINT products_sku_key UNIQUE (sku);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key3" UNIQUE (sku);
 
 
 --
--- Name: purchase_order_items purchase_order_items_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key30; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_order_items
-    ADD CONSTRAINT purchase_order_items_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key30" UNIQUE (sku);
 
 
 --
--- Name: purchase_orders purchase_orders_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key31; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_orders
-    ADD CONSTRAINT purchase_orders_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key31" UNIQUE (sku);
 
 
 --
--- Name: purchase_receipt_items purchase_receipt_items_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key32; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_receipt_items
-    ADD CONSTRAINT purchase_receipt_items_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key32" UNIQUE (sku);
 
 
 --
--- Name: purchase_receipts purchase_receipts_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key33; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_receipts
-    ADD CONSTRAINT purchase_receipts_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key33" UNIQUE (sku);
 
 
 --
--- Name: refresh_tokens refresh_tokens_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key34; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.refresh_tokens
-    ADD CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key34" UNIQUE (sku);
 
 
 --
--- Name: role_permissions role_permissions_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key35; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.role_permissions
-    ADD CONSTRAINT role_permissions_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key35" UNIQUE (sku);
 
 
 --
--- Name: role_permissions role_permissions_role_id_permission_id_unique; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key36; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.role_permissions
-    ADD CONSTRAINT role_permissions_role_id_permission_id_unique UNIQUE (role_id, permission_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key36" UNIQUE (sku);
 
 
 --
--- Name: roles roles_name_key; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key37; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.roles
-    ADD CONSTRAINT roles_name_key UNIQUE (name);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key37" UNIQUE (sku);
 
 
 --
--- Name: roles roles_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key38; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.roles
-    ADD CONSTRAINT roles_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key38" UNIQUE (sku);
 
 
 --
--- Name: sale_items sale_items_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key39; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.sale_items
-    ADD CONSTRAINT sale_items_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key39" UNIQUE (sku);
 
 
 --
--- Name: sales sales_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key4; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.sales
-    ADD CONSTRAINT sales_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key4" UNIQUE (sku);
 
 
 --
--- Name: stock_movements stock_movements_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key40; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.stock_movements
-    ADD CONSTRAINT stock_movements_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key40" UNIQUE (sku);
 
 
 --
--- Name: supplier_account_movements supplier_account_movements_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key41; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.supplier_account_movements
-    ADD CONSTRAINT supplier_account_movements_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key41" UNIQUE (sku);
 
 
 --
--- Name: suppliers suppliers_document_key; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key42; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.suppliers
-    ADD CONSTRAINT suppliers_document_key UNIQUE (document);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key42" UNIQUE (sku);
 
 
 --
--- Name: suppliers suppliers_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key43; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.suppliers
-    ADD CONSTRAINT suppliers_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key43" UNIQUE (sku);
 
 
 --
--- Name: user_roles user_roles_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key44; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.user_roles
-    ADD CONSTRAINT user_roles_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key44" UNIQUE (sku);
 
 
 --
--- Name: user_roles user_roles_user_id_role_id_unique; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key45; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.user_roles
-    ADD CONSTRAINT user_roles_user_id_role_id_unique UNIQUE (user_id, role_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key45" UNIQUE (sku);
 
 
 --
--- Name: users users_email_key; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key46; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.users
-    ADD CONSTRAINT users_email_key UNIQUE (email);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key46" UNIQUE (sku);
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key47; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key47" UNIQUE (sku);
 
 
 --
--- Name: users users_username_key; Type: CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key48; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.users
-    ADD CONSTRAINT users_username_key UNIQUE (username);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key48" UNIQUE (sku);
 
 
 --
--- Name: audit_logs_action; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key49; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX audit_logs_action ON gestion_ventas.audit_logs USING btree (action);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key49" UNIQUE (sku);
 
 
 --
--- Name: audit_logs_created_at; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key5; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX audit_logs_created_at ON gestion_ventas.audit_logs USING btree (created_at);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key5" UNIQUE (sku);
 
 
 --
--- Name: audit_logs_entity_type_entity_id; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key50; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX audit_logs_entity_type_entity_id ON gestion_ventas.audit_logs USING btree (entity_type, entity_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key50" UNIQUE (sku);
 
 
 --
--- Name: audit_logs_user_id; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key51; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX audit_logs_user_id ON gestion_ventas.audit_logs USING btree (user_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key51" UNIQUE (sku);
 
 
 --
--- Name: cash_movements_cash_register_id_idx; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key52; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX cash_movements_cash_register_id_idx ON gestion_ventas.cash_movements USING btree (cash_register_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key52" UNIQUE (sku);
 
 
 --
--- Name: client_account_movements_client_id_idx; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key53; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX client_account_movements_client_id_idx ON gestion_ventas.client_account_movements USING btree (client_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key53" UNIQUE (sku);
 
 
 --
--- Name: credit_note_items_credit_note_id_idx; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key54; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX credit_note_items_credit_note_id_idx ON gestion_ventas.credit_note_items USING btree (credit_note_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key54" UNIQUE (sku);
 
 
 --
--- Name: products_category_id_idx; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key55; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX products_category_id_idx ON gestion_ventas.products USING btree (category_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key55" UNIQUE (sku);
 
 
 --
--- Name: purchase_order_items_po_id_idx; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key56; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX purchase_order_items_po_id_idx ON gestion_ventas.purchase_order_items USING btree (purchase_order_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key56" UNIQUE (sku);
 
 
 --
--- Name: purchase_receipt_items_pr_id_idx; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key57; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX purchase_receipt_items_pr_id_idx ON gestion_ventas.purchase_receipt_items USING btree (purchase_receipt_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key57" UNIQUE (sku);
 
 
 --
--- Name: refresh_tokens_token_hash_unique; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key58; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE UNIQUE INDEX refresh_tokens_token_hash_unique ON gestion_ventas.refresh_tokens USING btree (token_hash);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key58" UNIQUE (sku);
 
 
 --
--- Name: sale_items_sale_id_idx; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key59; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX sale_items_sale_id_idx ON gestion_ventas.sale_items USING btree (sale_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key59" UNIQUE (sku);
 
 
 --
--- Name: stock_movements_product_id_idx; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key6; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX stock_movements_product_id_idx ON gestion_ventas.stock_movements USING btree (product_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key6" UNIQUE (sku);
 
 
 --
--- Name: supplier_account_movements_supplier_id_idx; Type: INDEX; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key60; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX supplier_account_movements_supplier_id_idx ON gestion_ventas.supplier_account_movements USING btree (supplier_id);
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key60" UNIQUE (sku);
 
 
 --
--- Name: audit_logs audit_logs_user_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key7; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.audit_logs
-    ADD CONSTRAINT audit_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key7" UNIQUE (sku);
 
 
 --
--- Name: cash_movements cash_movements_cash_register_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key8; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.cash_movements
-    ADD CONSTRAINT cash_movements_cash_register_id_fkey FOREIGN KEY (cash_register_id) REFERENCES gestion_ventas.cash_registers(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key8" UNIQUE (sku);
 
 
 --
--- Name: cash_movements cash_movements_expense_category_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Productos Productos_sku_key9; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.cash_movements
-    ADD CONSTRAINT cash_movements_expense_category_id_fkey FOREIGN KEY (expense_category_id) REFERENCES gestion_ventas.expense_categories(id) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE ONLY public."Productos"
+    ADD CONSTRAINT "Productos_sku_key9" UNIQUE (sku);
 
 
 --
--- Name: cash_movements cash_movements_user_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Torneos Torneos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.cash_movements
-    ADD CONSTRAINT cash_movements_user_id_fkey FOREIGN KEY (user_id) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Torneos"
+    ADD CONSTRAINT "Torneos_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: cash_registers cash_registers_user_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.cash_registers
-    ADD CONSTRAINT cash_registers_user_id_fkey FOREIGN KEY (user_id) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: client_account_movements client_account_movements_client_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.client_account_movements
-    ADD CONSTRAINT client_account_movements_client_id_fkey FOREIGN KEY (client_id) REFERENCES gestion_ventas.clients(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key" UNIQUE (username);
 
 
 --
--- Name: client_account_movements client_account_movements_user_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key1; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.client_account_movements
-    ADD CONSTRAINT client_account_movements_user_id_fkey FOREIGN KEY (user_id) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key1" UNIQUE (username);
 
 
 --
--- Name: clients clients_created_by_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key10; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.clients
-    ADD CONSTRAINT clients_created_by_fkey FOREIGN KEY (created_by) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key10" UNIQUE (username);
 
 
 --
--- Name: credit_note_items credit_note_items_credit_note_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key11; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.credit_note_items
-    ADD CONSTRAINT credit_note_items_credit_note_id_fkey FOREIGN KEY (credit_note_id) REFERENCES gestion_ventas.credit_notes(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key11" UNIQUE (username);
 
 
 --
--- Name: credit_note_items credit_note_items_product_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key12; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.credit_note_items
-    ADD CONSTRAINT credit_note_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES gestion_ventas.products(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key12" UNIQUE (username);
 
 
 --
--- Name: credit_notes credit_notes_client_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key13; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.credit_notes
-    ADD CONSTRAINT credit_notes_client_id_fkey FOREIGN KEY (client_id) REFERENCES gestion_ventas.clients(id) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key13" UNIQUE (username);
 
 
 --
--- Name: credit_notes credit_notes_created_by_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key14; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.credit_notes
-    ADD CONSTRAINT credit_notes_created_by_fkey FOREIGN KEY (created_by) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key14" UNIQUE (username);
 
 
 --
--- Name: credit_notes credit_notes_sale_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key15; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.credit_notes
-    ADD CONSTRAINT credit_notes_sale_id_fkey FOREIGN KEY (sale_id) REFERENCES gestion_ventas.sales(id) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key15" UNIQUE (username);
 
 
 --
--- Name: expense_categories expense_categories_created_by_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key16; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.expense_categories
-    ADD CONSTRAINT expense_categories_created_by_fkey FOREIGN KEY (created_by) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key16" UNIQUE (username);
 
 
 --
--- Name: product_categories product_categories_created_by_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key17; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.product_categories
-    ADD CONSTRAINT product_categories_created_by_fkey FOREIGN KEY (created_by) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key17" UNIQUE (username);
 
 
 --
--- Name: products products_category_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key18; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.products
-    ADD CONSTRAINT products_category_id_fkey FOREIGN KEY (category_id) REFERENCES gestion_ventas.product_categories(id) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key18" UNIQUE (username);
 
 
 --
--- Name: products products_created_by_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key19; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.products
-    ADD CONSTRAINT products_created_by_fkey FOREIGN KEY (created_by) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key19" UNIQUE (username);
 
 
 --
--- Name: purchase_order_items purchase_order_items_product_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key2; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_order_items
-    ADD CONSTRAINT purchase_order_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES gestion_ventas.products(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key2" UNIQUE (username);
 
 
 --
--- Name: purchase_order_items purchase_order_items_purchase_order_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key20; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_order_items
-    ADD CONSTRAINT purchase_order_items_purchase_order_id_fkey FOREIGN KEY (purchase_order_id) REFERENCES gestion_ventas.purchase_orders(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key20" UNIQUE (username);
 
 
 --
--- Name: purchase_orders purchase_orders_created_by_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key21; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_orders
-    ADD CONSTRAINT purchase_orders_created_by_fkey FOREIGN KEY (created_by) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key21" UNIQUE (username);
 
 
 --
--- Name: purchase_orders purchase_orders_supplier_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key22; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_orders
-    ADD CONSTRAINT purchase_orders_supplier_id_fkey FOREIGN KEY (supplier_id) REFERENCES gestion_ventas.suppliers(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key22" UNIQUE (username);
 
 
 --
--- Name: purchase_receipt_items purchase_receipt_items_product_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key23; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_receipt_items
-    ADD CONSTRAINT purchase_receipt_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES gestion_ventas.products(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key23" UNIQUE (username);
 
 
 --
--- Name: purchase_receipt_items purchase_receipt_items_purchase_receipt_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key24; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_receipt_items
-    ADD CONSTRAINT purchase_receipt_items_purchase_receipt_id_fkey FOREIGN KEY (purchase_receipt_id) REFERENCES gestion_ventas.purchase_receipts(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key24" UNIQUE (username);
 
 
 --
--- Name: purchase_receipts purchase_receipts_purchase_order_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key25; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_receipts
-    ADD CONSTRAINT purchase_receipts_purchase_order_id_fkey FOREIGN KEY (purchase_order_id) REFERENCES gestion_ventas.purchase_orders(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key25" UNIQUE (username);
 
 
 --
--- Name: purchase_receipts purchase_receipts_received_by_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key26; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.purchase_receipts
-    ADD CONSTRAINT purchase_receipts_received_by_fkey FOREIGN KEY (received_by) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key26" UNIQUE (username);
 
 
 --
--- Name: refresh_tokens refresh_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key27; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.refresh_tokens
-    ADD CONSTRAINT refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key27" UNIQUE (username);
 
 
 --
--- Name: role_permissions role_permissions_permission_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key28; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.role_permissions
-    ADD CONSTRAINT role_permissions_permission_id_fkey FOREIGN KEY (permission_id) REFERENCES gestion_ventas.permissions(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key28" UNIQUE (username);
 
 
 --
--- Name: role_permissions role_permissions_role_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key29; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.role_permissions
-    ADD CONSTRAINT role_permissions_role_id_fkey FOREIGN KEY (role_id) REFERENCES gestion_ventas.roles(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key29" UNIQUE (username);
 
 
 --
--- Name: sale_items sale_items_product_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key3; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.sale_items
-    ADD CONSTRAINT sale_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES gestion_ventas.products(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key3" UNIQUE (username);
 
 
 --
--- Name: sale_items sale_items_sale_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key30; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.sale_items
-    ADD CONSTRAINT sale_items_sale_id_fkey FOREIGN KEY (sale_id) REFERENCES gestion_ventas.sales(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key30" UNIQUE (username);
 
 
 --
--- Name: sales sales_client_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key31; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.sales
-    ADD CONSTRAINT sales_client_id_fkey FOREIGN KEY (client_id) REFERENCES gestion_ventas.clients(id) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key31" UNIQUE (username);
 
 
 --
--- Name: sales sales_created_by_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key32; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.sales
-    ADD CONSTRAINT sales_created_by_fkey FOREIGN KEY (created_by) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key32" UNIQUE (username);
 
 
 --
--- Name: stock_movements stock_movements_product_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key33; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.stock_movements
-    ADD CONSTRAINT stock_movements_product_id_fkey FOREIGN KEY (product_id) REFERENCES gestion_ventas.products(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key33" UNIQUE (username);
 
 
 --
--- Name: stock_movements stock_movements_user_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key34; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.stock_movements
-    ADD CONSTRAINT stock_movements_user_id_fkey FOREIGN KEY (user_id) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key34" UNIQUE (username);
 
 
 --
--- Name: supplier_account_movements supplier_account_movements_supplier_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key35; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.supplier_account_movements
-    ADD CONSTRAINT supplier_account_movements_supplier_id_fkey FOREIGN KEY (supplier_id) REFERENCES gestion_ventas.suppliers(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key35" UNIQUE (username);
 
 
 --
--- Name: supplier_account_movements supplier_account_movements_user_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key36; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.supplier_account_movements
-    ADD CONSTRAINT supplier_account_movements_user_id_fkey FOREIGN KEY (user_id) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key36" UNIQUE (username);
 
 
 --
--- Name: suppliers suppliers_created_by_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key37; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.suppliers
-    ADD CONSTRAINT suppliers_created_by_fkey FOREIGN KEY (created_by) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key37" UNIQUE (username);
 
 
 --
--- Name: user_roles user_roles_role_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key38; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.user_roles
-    ADD CONSTRAINT user_roles_role_id_fkey FOREIGN KEY (role_id) REFERENCES gestion_ventas.roles(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key38" UNIQUE (username);
 
 
 --
--- Name: user_roles user_roles_user_id_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key39; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.user_roles
-    ADD CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key39" UNIQUE (username);
 
 
 --
--- Name: users users_created_by_fkey; Type: FK CONSTRAINT; Schema: gestion_ventas; Owner: postgres
+-- Name: Users Users_username_key4; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY gestion_ventas.users
-    ADD CONSTRAINT users_created_by_fkey FOREIGN KEY (created_by) REFERENCES gestion_ventas.users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key4" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key40; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key40" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key41; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key41" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key42; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key42" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key43; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key43" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key44; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key44" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key45; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key45" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key46; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key46" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key47; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key47" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key48; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key48" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key49; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key49" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key5; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key5" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key50; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key50" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key51; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key51" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key52; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key52" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key53; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key53" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key54; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key54" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key55; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key55" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key56; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key56" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key57; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key57" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key58; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key58" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key59; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key59" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key6; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key6" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key60; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key60" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key61; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key61" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key7; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key7" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key8; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key8" UNIQUE (username);
+
+
+--
+-- Name: Users Users_username_key9; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_username_key9" UNIQUE (username);
+
+
+--
+-- Name: VentaItems VentaItems_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."VentaItems"
+    ADD CONSTRAINT "VentaItems_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Venta Venta_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Venta"
+    ADD CONSTRAINT "Venta_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Cajas Cajas_closed_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Cajas"
+    ADD CONSTRAINT "Cajas_closed_by_fkey" FOREIGN KEY (closed_by) REFERENCES public."Users"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Cajas Cajas_complejo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Cajas"
+    ADD CONSTRAINT "Cajas_complejo_id_fkey" FOREIGN KEY (complejo_id) REFERENCES public."Complejos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Cajas Cajas_opened_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Cajas"
+    ADD CONSTRAINT "Cajas_opened_by_fkey" FOREIGN KEY (opened_by) REFERENCES public."Users"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Cajas Cajas_torneo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Cajas"
+    ADD CONSTRAINT "Cajas_torneo_id_fkey" FOREIGN KEY (torneo_id) REFERENCES public."Torneos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: DevolucionItems DevolucionItems_devolucion_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."DevolucionItems"
+    ADD CONSTRAINT "DevolucionItems_devolucion_id_fkey" FOREIGN KEY (devolucion_id) REFERENCES public."Devolucions"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: DevolucionItems DevolucionItems_producto_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."DevolucionItems"
+    ADD CONSTRAINT "DevolucionItems_producto_id_fkey" FOREIGN KEY (producto_id) REFERENCES public."Productos"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: Devolucions Devolucions_caja_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Devolucions"
+    ADD CONSTRAINT "Devolucions_caja_id_fkey" FOREIGN KEY (caja_id) REFERENCES public."Cajas"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: Devolucions Devolucions_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Devolucions"
+    ADD CONSTRAINT "Devolucions_created_by_fkey" FOREIGN KEY (created_by) REFERENCES public."Users"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: Gastos Gastos_caja_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Gastos"
+    ADD CONSTRAINT "Gastos_caja_id_fkey" FOREIGN KEY (caja_id) REFERENCES public."Cajas"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: Gastos Gastos_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Gastos"
+    ADD CONSTRAINT "Gastos_created_by_fkey" FOREIGN KEY (created_by) REFERENCES public."Users"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: InventarioComplejos InventarioComplejos_complejo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."InventarioComplejos"
+    ADD CONSTRAINT "InventarioComplejos_complejo_id_fkey" FOREIGN KEY (complejo_id) REFERENCES public."Complejos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: InventarioComplejos InventarioComplejos_producto_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."InventarioComplejos"
+    ADD CONSTRAINT "InventarioComplejos_producto_id_fkey" FOREIGN KEY (producto_id) REFERENCES public."Productos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: InventarioGenerals InventarioGenerals_producto_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."InventarioGenerals"
+    ADD CONSTRAINT "InventarioGenerals_producto_id_fkey" FOREIGN KEY (producto_id) REFERENCES public."Productos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: MovimientoStocks MovimientoStocks_complejo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."MovimientoStocks"
+    ADD CONSTRAINT "MovimientoStocks_complejo_id_fkey" FOREIGN KEY (complejo_id) REFERENCES public."Complejos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: MovimientoStocks MovimientoStocks_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."MovimientoStocks"
+    ADD CONSTRAINT "MovimientoStocks_created_by_fkey" FOREIGN KEY (created_by) REFERENCES public."Users"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: MovimientoStocks MovimientoStocks_producto_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."MovimientoStocks"
+    ADD CONSTRAINT "MovimientoStocks_producto_id_fkey" FOREIGN KEY (producto_id) REFERENCES public."Productos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: MovimientoStocks MovimientoStocks_torneo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."MovimientoStocks"
+    ADD CONSTRAINT "MovimientoStocks_torneo_id_fkey" FOREIGN KEY (torneo_id) REFERENCES public."Torneos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: NotaCompraItems NotaCompraItems_nota_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."NotaCompraItems"
+    ADD CONSTRAINT "NotaCompraItems_nota_id_fkey" FOREIGN KEY (nota_id) REFERENCES public."NotaCompras"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: NotaCompraItems NotaCompraItems_producto_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."NotaCompraItems"
+    ADD CONSTRAINT "NotaCompraItems_producto_id_fkey" FOREIGN KEY (producto_id) REFERENCES public."Productos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: NotaCompras NotaCompras_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."NotaCompras"
+    ADD CONSTRAINT "NotaCompras_created_by_fkey" FOREIGN KEY (created_by) REFERENCES public."Users"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: OrdenTransferenciaItems OrdenTransferenciaItems_orden_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."OrdenTransferenciaItems"
+    ADD CONSTRAINT "OrdenTransferenciaItems_orden_id_fkey" FOREIGN KEY (orden_id) REFERENCES public."OrdenTransferencia"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: OrdenTransferenciaItems OrdenTransferenciaItems_producto_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."OrdenTransferenciaItems"
+    ADD CONSTRAINT "OrdenTransferenciaItems_producto_id_fkey" FOREIGN KEY (producto_id) REFERENCES public."Productos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: OrdenTransferencia OrdenTransferencia_complejo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."OrdenTransferencia"
+    ADD CONSTRAINT "OrdenTransferencia_complejo_id_fkey" FOREIGN KEY (complejo_id) REFERENCES public."Complejos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: OrdenTransferencia OrdenTransferencia_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."OrdenTransferencia"
+    ADD CONSTRAINT "OrdenTransferencia_created_by_fkey" FOREIGN KEY (created_by) REFERENCES public."Users"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Users Users_complejo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Users"
+    ADD CONSTRAINT "Users_complejo_id_fkey" FOREIGN KEY (complejo_id) REFERENCES public."Complejos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: VentaItems VentaItems_producto_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."VentaItems"
+    ADD CONSTRAINT "VentaItems_producto_id_fkey" FOREIGN KEY (producto_id) REFERENCES public."Productos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: VentaItems VentaItems_venta_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."VentaItems"
+    ADD CONSTRAINT "VentaItems_venta_id_fkey" FOREIGN KEY (venta_id) REFERENCES public."Venta"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Venta Venta_caja_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Venta"
+    ADD CONSTRAINT "Venta_caja_id_fkey" FOREIGN KEY (caja_id) REFERENCES public."Cajas"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Venta Venta_complejo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Venta"
+    ADD CONSTRAINT "Venta_complejo_id_fkey" FOREIGN KEY (complejo_id) REFERENCES public."Complejos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Venta Venta_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Venta"
+    ADD CONSTRAINT "Venta_created_by_fkey" FOREIGN KEY (created_by) REFERENCES public."Users"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Venta Venta_torneo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Venta"
+    ADD CONSTRAINT "Venta_torneo_id_fkey" FOREIGN KEY (torneo_id) REFERENCES public."Torneos"(id) ON UPDATE CASCADE ON DELETE SET NULL;
 
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict mD3ggVrH0RES9rasFgdZ354yUPxr5jaKoycFUesqo3ZhGaDFxzN8c6hAU7cuMe1
+\unrestrict AGUNe9KthOzio1mFbtI5FgaTUL54Y6FX4r7SmaQnoVA3g187BVJeUkyydWHXXSA
 
