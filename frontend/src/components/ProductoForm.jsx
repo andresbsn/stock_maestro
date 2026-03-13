@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const ProductoForm = ({ onSubmit, initialData, onCancel }) => {
+const ProductoForm = ({ onSubmit, initialData, onCancel, isAdmin }) => {
   const [formData, setFormData] = useState({
     sku: '',
     nombre: '',
     unidad: 'un',
     costo_unitario: '',
     precio_venta_unitario: '',
+    stock: '',
     activo: true
   });
 
@@ -18,6 +19,7 @@ const ProductoForm = ({ onSubmit, initialData, onCancel }) => {
         unidad: initialData.unidad || 'un',
         costo_unitario: initialData.costo_unitario || '',
         precio_venta_unitario: initialData.precio_venta_unitario || '',
+        stock: initialData.stock !== undefined ? initialData.stock : '',
         activo: initialData.activo !== undefined ? initialData.activo : true
       });
     } else {
@@ -27,6 +29,7 @@ const ProductoForm = ({ onSubmit, initialData, onCancel }) => {
             unidad: 'un',
             costo_unitario: '',
             precio_venta_unitario: '',
+            stock: '',
             activo: true
         });
     }
@@ -121,6 +124,19 @@ const ProductoForm = ({ onSubmit, initialData, onCancel }) => {
             />
         </div>
       </div>
+
+      {isAdmin && (
+        <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Stock (Manual)</label>
+            <input
+            type="number"
+            name="stock"
+            value={formData.stock}
+            onChange={handleChange}
+            className="input-field"
+            />
+        </div>
+      )}
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem' }}>
         <button 

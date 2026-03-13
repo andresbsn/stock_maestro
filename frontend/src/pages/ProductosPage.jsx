@@ -149,6 +149,7 @@ const ProductosPage = () => {
           onSubmit={editingProduct ? handleUpdate : handleCreate}
           initialData={editingProduct}
           onCancel={() => setModalOpen(false)}
+          isAdmin={user?.role === 'ADMIN'}
         />
       </Modal>
     </div>

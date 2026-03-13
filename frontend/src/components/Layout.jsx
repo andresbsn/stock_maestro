@@ -23,10 +23,12 @@ const Layout = () => {
         { name: 'Gastos', path: '/gastos' },
         { name: 'Devoluciones', path: '/devoluciones' },
         { name: 'Reportes', path: '/reportes' },
+        { name: 'Complejos', path: '/complejos' },
+        { name: 'Usuarios', path: '/users' },
     ].filter(item => {
         if (user?.role === 'ADMIN') return true;
-        // Non-admins don't see Compras, Transferencias, Torneos
-        return !['Compras', 'Transferencias', 'Torneos', 'Gastos', 'Devoluciones'].includes(item.name);
+        // Non-admins don't see Compras, Transferencias, Torneos, Complejos, Users
+        return !['Compras', 'Transferencias', 'Torneos', 'Gastos', 'Devoluciones', 'Complejos', 'Usuarios'].includes(item.name);
     });
 
     return (

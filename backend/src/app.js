@@ -22,6 +22,8 @@ app.use('/api/ventas', require('./routes/ventas.routes'));
 app.use('/api/gastos', require('./routes/gastos.routes'));
 app.use('/api/devoluciones', require('./routes/devoluciones.routes'));
 app.use('/api/reportes', require('./routes/reportes.routes'));
+app.use('/api/complejos', require('./routes/complejos.routes'));
+app.use('/api/users', require('./routes/users.routes'));
 // app.use('/api/inventario', require('./routes/inventario.routes'));
 
 app.get('/', (req, res) => {

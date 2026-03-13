@@ -13,6 +13,8 @@ import TransferenciasPage from './pages/TransferenciasPage';
 import GastosPage from './pages/GastosPage';
 import DevolucionesPage from './pages/DevolucionesPage';
 import ReportesPage from './pages/ReportesPage';
+import ComplejosPage from './pages/ComplejosPage';
+import UsersPage from './pages/UsersPage';
 
 // Placeholder components for other routes (to be implemented later)
 const Placeholder = ({ title }) => (
@@ -61,6 +63,8 @@ function App() {
           <Route path="gastos" element={<GastosPage />} />
           <Route path="devoluciones" element={<DevolucionesPage />} />
           <Route path="reportes" element={<ReportesPage />} />
+          <Route path="complejos" element={<ComplejosPage />} />
+          <Route path="users" element={<UsersPage />} />
         </Route>
       </Routes>
     </Router>

@@ -10,6 +10,7 @@ const NewTransferenciaForm = ({ onSubmit, onCancel, initialData }) => {
     const [selectedProduct, setSelectedProduct] = useState('');
     const [quantity, setQuantity] = useState('');
     const [itemEsGasto, setItemEsGasto] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         if (initialData) {
@@ -40,6 +41,10 @@ const NewTransferenciaForm = ({ onSubmit, onCancel, initialData }) => {
         fetchProducts();
     }, []);
 
+    const filteredProducts = products.filter(p => 
+        p.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const handleAddItem = (e) => {
         e.preventDefault();
         if (!selectedProduct || !quantity) return;
@@ -61,6 +66,7 @@ const NewTransferenciaForm = ({ onSubmit, onCancel, initialData }) => {
         setSelectedProduct('');
         setQuantity('');
         setItemEsGasto(false);
+        setSearchTerm('');
     };
 
     const handleRemoveItem = (index) => {
@@ -106,13 +112,21 @@ const NewTransferenciaForm = ({ onSubmit, onCancel, initialData }) => {
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
                     <div style={{ flex: 2 }}>
                         <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.8rem' }}>Producto</label>
+                        <input
+                            type="text"
+                            placeholder="Buscar producto..."
+                            className="input-field"
+                            style={{ marginBottom: '0.5rem', fontSize: '0.9rem', padding: '0.5rem' }}
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                        />
                         <select 
                             className="input-field" 
                             value={selectedProduct} 
                             onChange={e => setSelectedProduct(e.target.value)}
                         >
                             <option value="">Seleccione...</option>
-                            {products.map(p => (
+                            {filteredProducts.map(p => (
                                 <option key={p.id} value={p.id}>
                                     {p.nombre} (Stock Gral: {p.stockGeneral?.stock || 0})
                                 </option>
