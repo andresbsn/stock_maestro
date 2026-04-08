@@ -48,16 +48,32 @@ exports.getAll = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
+    const t = await sequelize.transaction();
     try {
         // Sanitize numeric fields: empty string -> 0
         if (req.body.costo_unitario === "") req.body.costo_unitario = 0;
         if (req.body.precio_venta_unitario === "") req.body.precio_venta_unitario = 0;
 
-        const producto = await Producto.create(req.body);
-        // Init General Stock 0
-        await InventarioGeneral.create({ producto_id: producto.id, stock: 0 });
+        const { stock, ...productoData } = req.body;
+
+        const producto = await Producto.create(productoData, { transaction: t });
+        
+        // Use provided stock if user is ADMIN, otherwise default to 0
+        let initialStock = 0;
+        if (req.user.role === 'ADMIN' && stock !== undefined && stock !== "" && stock !== null) {
+            initialStock = Number(stock);
+        }
+
+        // Init General Stock
+        await InventarioGeneral.create({ 
+            producto_id: producto.id, 
+            stock: initialStock 
+        }, { transaction: t });
+
+        await t.commit();
         res.json({ ok: true, data: producto });
     } catch (error) {
+        await t.rollback();
         res.status(400).json({ ok: false, error: { message: error.message } });
     }
 };

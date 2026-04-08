@@ -187,12 +187,10 @@ const VentasPage = () => {
     const saldoPendiente = Math.max(0, totalVenta - totalPagado);
 
     useEffect(() => {
-        if (payments.length === 1 && payments[0].metodo === 'CORTESIA') {
-            setPayments([{ metodo: 'CORTESIA', monto: totalVenta }]);
-        } else if (payments.length === 1 && payments[0].monto === '') {
-            setPayments([{ ...payments[0], monto: totalVenta }]);
+        if (payments.length === 1) {
+            setPayments(prev => [{ ...prev[0], monto: totalVenta }]);
         }
-    }, [totalVenta]);
+    }, [totalVenta, payments.length]);
 
     const updatePayment = (index, field, value) => {
         setPayments(prev => prev.map((pago, idx) => {
@@ -412,7 +410,7 @@ const VentasPage = () => {
                                             className="input-field"
                                             value={pago.monto}
                                             onChange={(e) => updatePayment(idx, 'monto', e.target.value)}
-                                            disabled={pago.metodo === 'CORTESIA'}
+                                            disabled={pago.metodo === 'CORTESIA' || payments.length === 1}
                                         />
                                         {payments.length > 1 && pago.metodo !== 'CORTESIA' ? (
                                             <button type="button" onClick={() => removePayment(idx)} style={{ color: '#ef4444', background: 'transparent' }}>✕</button>

@@ -11,7 +11,7 @@ const GastoForm = ({ onSubmit, onCancel }) => {
     });
 
     useEffect(() => {
-        cajasService.getAll()
+        cajasService.getAll({ estado: 'ABIERTA' })
             .then(res => setCajas(res.data || []))
             .catch(err => console.error('Error cargando cajas', err));
     }, []);
@@ -37,7 +37,7 @@ const GastoForm = ({ onSubmit, onCancel }) => {
     return (
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Caja</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Caja Activa</label>
                 <select
                     className="input-field"
                     name="caja_id"
@@ -45,10 +45,10 @@ const GastoForm = ({ onSubmit, onCancel }) => {
                     onChange={handleChange}
                     required
                 >
-                    <option value="">Seleccione...</option>
+                    <option value="">Seleccione una caja abierta...</option>
                     {cajas.map(caja => (
                         <option key={caja.id} value={caja.id}>
-                            Caja #{caja.id} - {caja.estado}
+                            #{caja.id} - {caja.Complejo?.nombre || 'General'}
                         </option>
                     ))}
                 </select>

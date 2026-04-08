@@ -468,6 +468,7 @@ const CajasPage = () => {
                         <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>ID</th>
                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Estado</th>
+                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Complejo</th>
                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Apertura</th>
                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Monto Inicial</th>
                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Monto Final</th>
@@ -487,6 +488,7 @@ const CajasPage = () => {
                                         {caja.estado}
                                     </span>
                                 </td>
+                                <td style={{ padding: '1rem' }}>{caja.Complejo?.nombre || 'General'}</td>
                                 <td style={{ padding: '1rem' }}>{new Date(caja.opened_at).toLocaleString()}</td>
                                 <td style={{ padding: '1rem' }}>${caja.monto_inicial}</td>
                                 <td style={{ padding: '1rem' }}>{caja.monto_final ? `$${caja.monto_final}` : '-'}</td>

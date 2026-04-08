@@ -17,3 +17,12 @@ exports.reporteAdmin = async (req, res) => {
         res.status(500).json({ ok: false, error: { message: error.message } });
     }
 };
+
+exports.reporteVentasProducto = async (req, res) => {
+    try {
+        const reporte = await ReportesService.getVentasPorProducto(req.query);
+        res.json({ ok: true, data: reporte });
+    } catch (error) {
+        res.status(500).json({ ok: false, error: { message: error.message } });
+    }
+};

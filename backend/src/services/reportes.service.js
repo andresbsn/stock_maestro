@@ -1,4 +1,5 @@
-const { Caja, Venta, VentaItem, Gasto, Devolucion, DevolucionItem, OrdenTransferencia, OrdenTransferenciaItem } = require('../models');
+const { Op } = require('sequelize');
+const { sequelize, Caja, Venta, VentaItem, Producto, Gasto, Devolucion, DevolucionItem, OrdenTransferencia, OrdenTransferenciaItem } = require('../models');
 
 class ReportesService {
     static async getUserCajaReporte(user) {
@@ -117,6 +118,55 @@ class ReportesService {
                 ganancia_neta: gananciaNeta
             }
         };
+    }
+
+    static async getVentasPorProducto(filters = {}) {
+        const whereVenta = {};
+        const whereProducto = {};
+        const whereItems = { tipo: 'GANANCIA' };
+
+        if (filters.complejo_id) {
+            whereVenta.complejo_id = filters.complejo_id;
+        }
+
+        if (filters.start_date || filters.end_date) {
+            whereVenta.created_at = {};
+            if (filters.start_date) {
+                const startDate = new Date(filters.start_date);
+                whereVenta.created_at[Op.gte] = startDate;
+            }
+            if (filters.end_date) {
+                const endDate = new Date(filters.end_date);
+                endDate.setHours(23, 59, 59, 999);
+                whereVenta.created_at[Op.lte] = endDate;
+            }
+        }
+
+        if (filters.query) {
+            whereProducto.nombre = { [Op.iLike]: `%${filters.query}%` };
+        }
+
+        const resultados = await VentaItem.findAll({
+            where: whereItems,
+            attributes: [
+                'producto_id',
+                [sequelize.fn('SUM', sequelize.col('cantidad')), 'cantidad_total'],
+                [sequelize.fn('SUM', sequelize.col('subtotal')), 'monto_total']
+            ],
+            include: [
+                { model: Producto, as: 'producto', attributes: ['id', 'sku', 'nombre'], where: whereProducto },
+                { model: Venta, attributes: [], where: whereVenta }
+            ],
+            group: ['producto_id', 'producto.id', 'producto.sku', 'producto.nombre'],
+            order: [[sequelize.literal('monto_total'), 'DESC']]
+        });
+
+        return resultados.map((item) => ({
+            producto_id: item.producto_id,
+            producto: item.producto,
+            cantidad_total: Number(item.get('cantidad_total') || 0),
+            monto_total: Number(item.get('monto_total') || 0)
+        }));
     }
 }
 

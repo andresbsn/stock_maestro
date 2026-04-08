@@ -8,6 +8,10 @@ const reportesService = {
     getAdmin: async (params = {}) => {
         const response = await api.get('/reportes/admin', { params });
         return response.data;
+    },
+    getVentasProducto: async (params = {}) => {
+        const response = await api.get('/reportes/ventas-producto', { params });
+        return response.data;
     }
 };
 

@@ -44,7 +44,7 @@ class CajasService {
         if (complejoId) where.complejo_id = complejoId;
         // if (torneoId) where.torneo_id = torneoId; // Optional filter
 
-        return await Caja.findOne({ 
+        return await Caja.findOne({
             where,
             include: [
                 { model: require('../models').User, as: 'opener' },
@@ -82,13 +82,18 @@ class CajasService {
         });
     }
 
-    static async getAll() {
+    static async getAll(filters = {}) {
+        const where = {};
+        if (filters.estado) where.estado = filters.estado;
+
         return await Caja.findAll({
+            where,
             include: [
                 { model: require('../models').User, as: 'opener' },
-                { model: require('../models').User, as: 'closer' }
+                { model: require('../models').User, as: 'closer' },
+                { model: require('../models').Complejo }
             ],
-            order: [['created_at', 'DESC']]
+            order: [['opened_at', 'DESC']]
         });
     }
 

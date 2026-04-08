@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import reportesService from '../services/reportesService';
 import cajasService from '../services/cajasService';
+import complejosService from '../services/complejosService';
 import { useAuth } from '../context/AuthContext';
 
 const ReportesPage = () => {
@@ -10,6 +11,14 @@ const ReportesPage = () => {
     const [adminReporte, setAdminReporte] = useState(null);
     const [cajas, setCajas] = useState([]);
     const [cajaFiltro, setCajaFiltro] = useState('');
+    const [ventasProducto, setVentasProducto] = useState([]);
+    const [complejos, setComplejos] = useState([]);
+    const [ventasProductoFilters, setVentasProductoFilters] = useState({
+        query: '',
+        start_date: '',
+        end_date: '',
+        complejo_id: ''
+    });
 
     const fetchUsuarioReporte = async () => {
         const res = await reportesService.getUsuarioCaja();
@@ -21,14 +30,23 @@ const ReportesPage = () => {
         setAdminReporte(res.data);
     };
 
+    const fetchVentasProducto = async (filters = {}) => {
+        const res = await reportesService.getVentasProducto(filters);
+        setVentasProducto(res.data || []);
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
                 if (user?.role === 'ADMIN') {
-                    const cajasRes = await cajasService.getAll();
+                    const [cajasRes, complejosRes] = await Promise.all([
+                        cajasService.getAll(),
+                        complejosService.getAll()
+                    ]);
                     setCajas(cajasRes.data || []);
-                    await fetchAdminReporte();
+                    setComplejos(complejosRes.data || []);
+                    await Promise.all([fetchAdminReporte(), fetchVentasProducto()]);
                 } else {
                     await fetchUsuarioReporte();
                 }
@@ -46,6 +64,12 @@ const ReportesPage = () => {
         await fetchAdminReporte(value ? { caja_id: value } : {});
     };
 
+    const handleVentasProductoFilterChange = (field, value) => {
+        const next = { ...ventasProductoFilters, [field]: value };
+        setVentasProductoFilters(next);
+        fetchVentasProducto(Object.fromEntries(Object.entries(next).filter(([, val]) => val)));
+    };
+
     if (loading) return <div style={{ padding: '2rem' }}>Cargando...</div>;
 
     if (user?.role === 'ADMIN') {
@@ -61,6 +85,73 @@ const ReportesPage = () => {
                                 <option key={caja.id} value={caja.id}>Caja #{caja.id}</option>
                             ))}
                         </select>
+                    </div>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '1rem', marginBottom: '1.5rem' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <h3 style={{ marginBottom: 0 }}>Ventas por producto</h3>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                            <input
+                                className="input-field"
+                                placeholder="Buscar por descripción"
+                                value={ventasProductoFilters.query}
+                                onChange={(e) => handleVentasProductoFilterChange('query', e.target.value)}
+                                style={{ minWidth: '220px' }}
+                            />
+                            <input
+                                className="input-field"
+                                type="date"
+                                value={ventasProductoFilters.start_date}
+                                onChange={(e) => handleVentasProductoFilterChange('start_date', e.target.value)}
+                            />
+                            <input
+                                className="input-field"
+                                type="date"
+                                value={ventasProductoFilters.end_date}
+                                onChange={(e) => handleVentasProductoFilterChange('end_date', e.target.value)}
+                            />
+                            <select
+                                className="input-field"
+                                value={ventasProductoFilters.complejo_id}
+                                onChange={(e) => handleVentasProductoFilterChange('complejo_id', e.target.value)}
+                                style={{ minWidth: '200px' }}
+                            >
+                                <option value="">Todos los complejos</option>
+                                {complejos.map((complejo) => (
+                                    <option key={complejo.id} value={complejo.id}>{complejo.nombre}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style={{ marginTop: '1rem', overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                                <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+                                    <th style={{ padding: '0.75rem', color: 'var(--text-muted)' }}>Producto</th>
+                                    <th style={{ padding: '0.75rem', color: 'var(--text-muted)' }}>SKU</th>
+                                    <th style={{ padding: '0.75rem', color: 'var(--text-muted)' }}>Cantidad</th>
+                                    <th style={{ padding: '0.75rem', color: 'var(--text-muted)' }}>Total vendido</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {ventasProducto.length === 0 ? (
+                                    <tr>
+                                        <td style={{ padding: '0.75rem' }} colSpan={4}>Sin resultados.</td>
+                                    </tr>
+                                ) : (
+                                    ventasProducto.map((row) => (
+                                        <tr key={row.producto_id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                            <td style={{ padding: '0.75rem' }}>{row.producto?.nombre}</td>
+                                            <td style={{ padding: '0.75rem' }}>{row.producto?.sku}</td>
+                                            <td style={{ padding: '0.75rem' }}>{row.cantidad_total}</td>
+                                            <td style={{ padding: '0.75rem' }}>${Number(row.monto_total || 0).toFixed(2)}</td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 

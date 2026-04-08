@@ -34,7 +34,8 @@ exports.getActive = async (req, res) => {
 
 exports.getAll = async (req, res) => {
     try {
-        const cajas = await CajasService.getAll();
+        const filters = req.query; // e.g. ?estado=ABIERTA
+        const cajas = await CajasService.getAll(filters);
         res.json({ ok: true, data: cajas });
     } catch (error) {
         res.status(500).json({ ok: false, error: { message: error.message } });

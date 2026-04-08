@@ -18,8 +18,8 @@ const cajasService = {
         return response.data;
     },
 
-    getAll: async () => {
-        const response = await api.get('/cajas');
+    getAll: async (params) => {
+        const response = await api.get('/cajas', { params });
         return response.data;
     },
 
