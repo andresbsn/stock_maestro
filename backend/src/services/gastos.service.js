@@ -1,14 +1,14 @@
-const { Gasto, Caja } = require('../models');
+const { Gasto, Torneo } = require('../models');
 
 class GastosService {
     static async getAll(filters = {}) {
         const where = {};
-        if (filters.caja_id) where.caja_id = filters.caja_id;
+        if (filters.torneo_id) where.torneo_id = filters.torneo_id;
 
         return await Gasto.findAll({
             where,
             include: [
-                { model: Caja },
+                { model: Torneo },
                 { model: require('../models').User, as: 'creator' }
             ],
             order: [['created_at', 'DESC']]
@@ -16,11 +16,11 @@ class GastosService {
     }
 
     static async createGasto(payload, user) {
-        const { caja_id, monto, descripcion, categoria } = payload;
-        if (!caja_id) throw new Error('Debe seleccionar una caja');
+        const { torneo_id, monto, descripcion, categoria } = payload;
+        if (!torneo_id) throw new Error('Debe seleccionar un torneo');
 
         return await Gasto.create({
-            caja_id,
+            torneo_id,
             monto,
             descripcion,
             categoria,

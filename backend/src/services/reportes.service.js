@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { sequelize, Caja, Venta, VentaItem, Producto, Gasto, Devolucion, DevolucionItem, OrdenTransferencia, OrdenTransferenciaItem } = require('../models');
+const { sequelize, Caja, Venta, VentaItem, Producto, Gasto, Devolucion, DevolucionItem, OrdenTransferencia, OrdenTransferenciaItem, Torneo } = require('../models');
 
 class ReportesService {
     static async getUserCajaReporte(user) {
@@ -34,8 +34,11 @@ class ReportesService {
 
         if (filters.caja_id) {
             whereVentas.caja_id = filters.caja_id;
-            whereGastos.caja_id = filters.caja_id;
             whereDevoluciones.caja_id = filters.caja_id;
+        }
+
+        if (filters.torneo_id) {
+            whereGastos.torneo_id = filters.torneo_id;
         }
 
         const [ventas, gastos, devoluciones, transferencias] = await Promise.all([
@@ -46,6 +49,7 @@ class ReportesService {
             }),
             Gasto.findAll({
                 where: whereGastos,
+                include: [{ model: Torneo }],
                 order: [['created_at', 'DESC']]
             }),
             Devolucion.findAll({

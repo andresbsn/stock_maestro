@@ -209,7 +209,7 @@ const ReportesPage = () => {
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                <th style={{ padding: '0.75rem', color: 'var(--text-muted)' }}>Caja</th>
+                                <th style={{ padding: '0.75rem', color: 'var(--text-muted)' }}>Torneo</th>
                                 <th style={{ padding: '0.75rem', color: 'var(--text-muted)' }}>Monto</th>
                                 <th style={{ padding: '0.75rem', color: 'var(--text-muted)' }}>Descripción</th>
                             </tr>
@@ -217,7 +217,7 @@ const ReportesPage = () => {
                         <tbody>
                             {(adminReporte?.gastos || []).map(gasto => (
                                 <tr key={gasto.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <td style={{ padding: '0.75rem' }}>#{gasto.caja_id}</td>
+                                    <td style={{ padding: '0.75rem' }}>{gasto.Torneo?.nombre || `#${gasto.torneo_id}`}</td>
                                     <td style={{ padding: '0.75rem', color: '#f87171' }}>- ${gasto.monto}</td>
                                     <td style={{ padding: '0.75rem' }}>{gasto.descripcion}</td>
                                 </tr>

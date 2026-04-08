@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import cajasService from '../services/cajasService';
+import torneosService from '../services/torneosService';
 
 const GastoForm = ({ onSubmit, onCancel }) => {
-    const [cajas, setCajas] = useState([]);
+    const [torneos, setTorneos] = useState([]);
     const [formData, setFormData] = useState({
-        caja_id: '',
+        torneo_id: '',
         monto: '',
         descripcion: '',
         categoria: ''
     });
 
     useEffect(() => {
-        cajasService.getAll({ estado: 'ABIERTA' })
-            .then(res => setCajas(res.data || []))
-            .catch(err => console.error('Error cargando cajas', err));
+        torneosService.getActive()
+            .then(res => setTorneos(res.data || []))
+            .catch(err => console.error('Error cargando torneos', err));
     }, []);
 
     const handleChange = (e) => {
@@ -23,13 +23,13 @@ const GastoForm = ({ onSubmit, onCancel }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.caja_id) {
-            alert('Debe seleccionar una caja');
+        if (!formData.torneo_id) {
+            alert('Debe seleccionar un torneo');
             return;
         }
         onSubmit({
             ...formData,
-            caja_id: parseInt(formData.caja_id, 10),
+            torneo_id: parseInt(formData.torneo_id, 10),
             monto: parseFloat(formData.monto)
         });
     };
@@ -37,18 +37,18 @@ const GastoForm = ({ onSubmit, onCancel }) => {
     return (
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Caja Activa</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Torneo</label>
                 <select
                     className="input-field"
-                    name="caja_id"
-                    value={formData.caja_id}
+                    name="torneo_id"
+                    value={formData.torneo_id}
                     onChange={handleChange}
                     required
                 >
-                    <option value="">Seleccione una caja abierta...</option>
-                    {cajas.map(caja => (
-                        <option key={caja.id} value={caja.id}>
-                            #{caja.id} - {caja.Complejo?.nombre || 'General'}
+                    <option value="">Seleccione un torneo...</option>
+                    {torneos.map(torneo => (
+                        <option key={torneo.id} value={torneo.id}>
+                            #{torneo.id} - {torneo.nombre}
                         </option>
                     ))}
                 </select>

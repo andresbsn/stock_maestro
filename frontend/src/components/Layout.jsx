@@ -33,12 +33,25 @@ const Layout = () => {
 
     return (
         <div className="layout-container">
-            <aside className="sidebar glass-panel" style={{ margin: '1rem', height: 'calc(100vh - 2rem)', borderRadius: '16px' }}>
+            <aside
+                className="sidebar glass-panel"
+                style={{ margin: '1rem', height: 'calc(100vh - 2rem)', borderRadius: '16px', overflow: 'hidden' }}
+            >
                 <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
                     <h2 style={{ color: 'var(--primary)' }}>Inventario</h2>
                 </div>
 
-                <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+                <nav
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.5rem',
+                        flex: 1,
+                        minHeight: 0,
+                        overflowY: 'auto',
+                        paddingRight: '0.25rem'
+                    }}
+                >
                     {navItems.map((item) => {
                         const isActive = location.pathname.startsWith(item.path);
                         return (

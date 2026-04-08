@@ -47,7 +47,7 @@ const GastosPage = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Caja</th>
+                            <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Torneo</th>
                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Fecha</th>
                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Monto</th>
                             <th style={{ padding: '1rem', color: 'var(--text-muted)' }}>Descripción</th>
@@ -60,7 +60,7 @@ const GastosPage = () => {
                         ) : (
                             gastos.map(gasto => (
                                 <tr key={gasto.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <td style={{ padding: '1rem' }}>#{gasto.caja_id}</td>
+                                    <td style={{ padding: '1rem' }}>{gasto.Torneo?.nombre || `#${gasto.torneo_id}`}</td>
                                     <td style={{ padding: '1rem' }}>{new Date(gasto.created_at).toLocaleString()}</td>
                                     <td style={{ padding: '1rem', color: '#f87171' }}>- ${gasto.monto}</td>
                                     <td style={{ padding: '1rem' }}>{gasto.descripcion}</td>
