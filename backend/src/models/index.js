@@ -63,6 +63,8 @@ VentaItem.belongsTo(Venta, { foreignKey: 'venta_id' });
 VentaItem.belongsTo(Producto, { foreignKey: 'producto_id', as: 'producto' });
 
 // Gastos
+Gasto.belongsTo(Caja, { foreignKey: 'caja_id' });
+Caja.hasMany(Gasto, { foreignKey: 'caja_id', as: 'gastos' });
 Gasto.belongsTo(Torneo, { foreignKey: 'torneo_id' });
 Torneo.hasMany(Gasto, { foreignKey: 'torneo_id', as: 'gastos' });
 Gasto.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });

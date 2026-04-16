@@ -13,15 +13,12 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-            // Optional: Validate token with backend
-            // const response = await api.get('/auth/me');
-            // setUser(response.data);
-            
-            // For now, just assume logged in if token exists, or decode it
-             setUser({ token }); // Simplified
+            const response = await api.get('/auth/me');
+            setUser(response.data?.data || response.data);
         } catch (error) {
           console.error("Auth check failed", error);
           localStorage.removeItem('token');
+          setUser(null);
         }
       }
       setLoading(false);

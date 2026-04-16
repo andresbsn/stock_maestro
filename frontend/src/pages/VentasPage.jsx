@@ -114,13 +114,14 @@ const VentasPage = () => {
         checkActiveCaja();
         fetchProducts();
         fetchSales();
-    }, []);
+    }, [user]);
 
     const checkActiveCaja = async () => {
         try {
             // Check for complex from user
             const cId = user?.complejo_id;
-            const res = await cajasService.getActive({ complejoId: cId });
+            const params = cId ? { complejoId: cId } : undefined;
+            const res = await cajasService.getActive(params);
             setActiveCaja(res.data);
         } catch (error) {
             console.error("Error checking caja", error);

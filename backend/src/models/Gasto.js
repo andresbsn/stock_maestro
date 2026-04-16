@@ -19,6 +19,10 @@ const Gasto = sequelize.define('Gasto', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    caja_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
     torneo_id: {
         type: DataTypes.INTEGER,
         allowNull: false
